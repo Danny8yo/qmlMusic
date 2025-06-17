@@ -58,6 +58,7 @@ void MusicScanner::doScan()
             return;
         }
 
+        //
         int processedFiles = 0;
         emit scanProgress(0);
 
@@ -78,10 +79,12 @@ void MusicScanner::doScan()
     }
 }
 
+//参数1 扫描路径. 2& processedFiles 已处理的文件数, 3 totalFiles 总文件数
 void MusicScanner::scanDirectory(const QString& dirPath, int& processedFiles, int totalFiles)
 {
     QDir dir(dirPath);
-    if (!dir.exists()) { return; }
+    if (!dir.exists()) {qDebug() << "路径不存在"; return; }
+    // qDebug() << "扫描目录: " << dirPath;
 
     // 递归迭代目录
     QDirIterator iterator(dirPath, m_supportedFormats, QDir::Files, QDirIterator::Subdirectories);
@@ -93,6 +96,7 @@ void MusicScanner::scanDirectory(const QString& dirPath, int& processedFiles, in
 
         if (song) { // 加入到QList
             m_foundSongs.append(song);
+            // qDebug() << "添加歌曲: " << m_foundSongs.back()->title();
         }
 
         processedFiles++;
@@ -114,6 +118,7 @@ int MusicScanner::countMusicFiles(const QStringList& directories)
             count++;
         }
     }
+    // qDebug() << "扫描到: " << count << "首歌曲";
 
     return count;
 }
@@ -128,8 +133,8 @@ Song* MusicScanner::processMusicFile(const QString& filePath)
     QMimeType mimeType = mimeDb.mimeTypeForFile(filePath);
     if (!mimeType.name().startsWith("audio/")) { return nullptr; }
 
-    qDebug() << fileInfo.baseName();
-    qDebug() << "unknown";
+    // qDebug() << fileInfo.baseName();
+    // qDebug() << "unknown";
     // 创建Song对象
     Song* song = new Song(filePath);
 

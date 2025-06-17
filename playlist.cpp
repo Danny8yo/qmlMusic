@@ -62,6 +62,7 @@ void Playlist::addSong(Song *song)
 {
     if (song && !m_songs.contains(song)) {
         m_songs.append(song);
+        // qDebug() << "添加歌曲" << song->title();
         emit songsChanged();
         emit songCountChanged();
     }

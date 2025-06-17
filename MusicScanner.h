@@ -33,6 +33,8 @@ signals:
     void scanError(const QString& error);
 
 private:
+    QList<Song*> m_foundSongs; //当前路径列表下扫描到的所有歌曲
+
     QThread* m_workerThread;
 
     QStringList m_scanDirectories;
@@ -41,7 +43,7 @@ private:
 
     std::atomic<bool> m_shouldStop;
 
-    QList<Song*> m_foundSongs;
+
 
     Song* processMusicFile(const QString& filePath); // TagLib处理内嵌元数据
 

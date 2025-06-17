@@ -18,6 +18,7 @@ class Playlist : public QObject
 public:
     explicit Playlist(QObject* parent = nullptr);
     explicit Playlist(const QString& name, QObject* parent = nullptr);
+    //创建所有自定义歌曲列表
     explicit Playlist(const int &id,const QString &name, const QString &description,const QDateTime &date,QObject *parent);
 
     // Getters

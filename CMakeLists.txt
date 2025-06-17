@@ -24,6 +24,7 @@ qt_add_qml_module(appqmltest
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
+    SOURCES playlist.cpp playlist.h
 )
 
 set_target_properties(appqmltest PROPERTIES
