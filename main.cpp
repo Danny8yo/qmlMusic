@@ -1,21 +1,22 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    // QQmlApplicationEngine engine;
-    // QObject::connect(
-    //     &engine,
-    //     &QQmlApplicationEngine::objectCreationFailed,
-    //     &app,
-    //     []() { QCoreApplication::exit(-1); },
-    //     Qt::QueuedConnection);
-    // engine.loadFromModule("qmltest", "Main");
+    QQmlApplicationEngine engine;
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection);
+    engine.loadFromModule("qmltest", "Main");
 
-    //扫描/home/lius/Music/no_cover_mp3s/目录下的歌曲
-    // QDir musicDir("/home/lius/Music/no_cover_mp3s/");
+    // 扫描/home/lius/Music/no_cover_mp3s/目录下的歌曲
+    QDir musicDir("/home/lius/Music/no_cover_mp3s/");
     // QList<Song*> songs;
     // //遍历歌曲添加进songs列表
     // for (const QString &fileName : musicDir.entryList(QDir::Files)) {
