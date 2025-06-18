@@ -75,12 +75,12 @@ private slots:
 private:
     QMediaPlayer* m_player;
     QAudioOutput* m_audioOutput;
-    QList<Song*> m_playQueue;
-    int m_currentIndex;
-    PlaybackMode m_playbackMode;
-    Song* m_currentSong;
+    QList<Song*> m_playQueue;    // 播放队列
+    int m_currentIndex;          //当前索引
+    PlaybackMode m_playbackMode; // 播放模式
+    Song* m_currentSong;         // 正在播放的歌曲
 
-    void updateCurrentSong();
-    int getNextIndex() const;
-    int getPreviousIndex() const;
+    void updateCurrentSong();     // 更新正在播放的歌曲
+    int getNextIndex() const;     //获取下一首歌的索引
+    int getPreviousIndex() const; // 获取上一手歌的索引
 };

@@ -14,25 +14,27 @@
 #include <taglib/unsynchronizedlyricsframe.h>
 #include <taglib/tstring.h>
 
-
 Song::Song(QObject *parent) : QObject(parent) {}
 
-Song::Song(const QString &filePath, QObject *parent)
-    : QObject(parent), m_filePath(filePath)
+Song::Song(const QString &filePath, QObject *parent) : QObject(parent), m_filePath(filePath)
 {
     // 构造时自动加载元数据
     loadMetadataFromFile();
 }
 
-Song::Song(const QString &filePath, const QString &title, const QString &artist, const QString &album, int duration, QObject *parent)
-    : QObject(parent),
-    m_title(title),
-    m_artist(artist),
-    m_album(album),
-    m_duration(duration),
-    m_filePath(filePath)
-{
-}
+Song::Song(const QString &filePath,
+           const QString &title,
+           const QString &artist,
+           const QString &album,
+           int duration,
+           QObject *parent)
+    : QObject(parent)
+    , m_title(title)
+    , m_artist(artist)
+    , m_album(album)
+    , m_duration(duration)
+    , m_filePath(filePath)
+{}
 
 bool Song::loadMetadataFromFile()
 {
@@ -59,15 +61,28 @@ bool Song::loadMetadataFromFile()
     setArtist(QString::fromUtf8(tag->artist().toCString(true)));
     setAlbum(QString::fromUtf8(tag->album().toCString(true)));
 
-    if(title().isEmpty() || title() == "Unknown Title") {
+    // 封面部分
+    QFileInfo audioFileInfo(m_filePath);
+
+    //  构造封面目录路径
+    QString coverDirPath = audioFileInfo.absolutePath() + "/covers";
+    QDir coverDir(coverDirPath);
+
+    //  获取不带扩展名的文件名
+    QString baseName = audioFileInfo.completeBaseName(); // 保留所有点号前的部分
+
+    // 构造封面文件路径
+    QString coverPath = coverDirPath + "/" + baseName + ".jpg";
+
+    setCoverArtPath(QUrl::fromLocalFile(coverPath));
+
+    if (title().isEmpty() || title() == "Unknown Title") {
         // qDebug() << "歌曲名称为: "<< this->title();
         // qDebug() << "作者: "<< tag->artist().toCString(true);
         setTitle(QFileInfo(m_filePath).baseName());
     }
 
-    if (f.audioProperties()) {
-        setDuration(f.audioProperties()->lengthInSeconds());
-    }
+    if (f.audioProperties()) { setDuration(f.audioProperties()->lengthInSeconds()); }
 
     // 现在可以调用提取函数了
     // extractEmbeddedCover();
@@ -164,20 +179,42 @@ bool Song::loadMetadataFromFile()
 // }
 
 // --- Getters ---
-int Song::id() const { return m_id; }
-QString Song::title() const { return m_title; }
-QString Song::artist() const { return m_artist; }
-QString Song::album() const { return m_album; }
-int Song::duration() const { return m_duration; }
-QString Song::filePath() const { return m_filePath; }
-QUrl Song::coverArtPath() const { return m_coverArtPath; }
-QString Song::lyricsPath() const { return m_lyricsPath; }
+int Song::id() const
+{
+    return m_id;
+}
+QString Song::title() const
+{
+    return m_title;
+}
+QString Song::artist() const
+{
+    return m_artist;
+}
+QString Song::album() const
+{
+    return m_album;
+}
+int Song::duration() const
+{
+    return m_duration;
+}
+QString Song::filePath() const
+{
+    return m_filePath;
+}
+QUrl Song::coverArtPath() const
+{
+    return m_coverArtPath;
+}
+QString Song::lyricsPath() const
+{
+    return m_lyricsPath;
+}
 
 QString Song::durationString() const
 {
-    if (m_duration <= 0) {
-        return "00:00";
-    }
+    if (m_duration <= 0) { return "00:00"; }
     int seconds = m_duration % 60;
     int minutes = m_duration / 60;
     return QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
@@ -246,22 +283,21 @@ void Song::setCoverArtPath(const QUrl &coverArtPath)
 
 void Song::setLyricsPath(const QString &lyricsPath)
 {
+    //qDebug() << "have cover";
     if (m_lyricsPath != lyricsPath) {
         m_lyricsPath = lyricsPath;
+
         emit lyricsPathChanged();
     }
 }
 
 // --- Private Helper ---
-QString Song::ensureCachePath(const QString& subfolder) {
+QString Song::ensureCachePath(const QString &subfolder)
+{
     QString cacheRoot = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    if (cacheRoot.isEmpty()) {
-        cacheRoot = QDir::tempPath();
-    }
+    if (cacheRoot.isEmpty()) { cacheRoot = QDir::tempPath(); }
     QString specificCachePath = cacheRoot + "/" + subfolder;
     QDir dir(specificCachePath);
-    if (!dir.exists()) {
-        dir.mkpath(".");
-    }
+    if (!dir.exists()) { dir.mkpath("."); }
     return specificCachePath;
 }

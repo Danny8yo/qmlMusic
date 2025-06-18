@@ -217,10 +217,12 @@ void PlayerController::onMediaStatusChanged(QMediaPlayer::MediaStatus status)
 
 void PlayerController::updateCurrentSong()
 {
-    Song* newCurrentSong = nullptr;
+    Song* newCurrentSong = nullptr; // 默认无歌曲
+
+    //检查索引，并获取对应歌曲
     if (m_currentIndex >= 0 && m_currentIndex < m_playQueue.size()) { newCurrentSong = m_playQueue.at(m_currentIndex); }
 
-    if (m_currentSong != newCurrentSong) {
+    if (m_currentSong != newCurrentSong) { // 比较新旧歌曲
         m_currentSong = newCurrentSong;
         emit currentSongChanged();
     }

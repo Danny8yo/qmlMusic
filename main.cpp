@@ -9,6 +9,8 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    // 注册Song类
+    qmlRegisterType<Song>("Song", 1, 0, "Song");
     QQmlApplicationEngine engine;
     QObject::connect(
         &engine,
@@ -21,8 +23,10 @@ int main(int argc, char *argv[])
     // 扫描/home/lius/Music/no_cover_mp3s/目录下的歌曲
     //QString musicDir = "/home/lius/Music/no_cover_mp3s/";
     QString musicDir = "/root/Music";
+    //QString musicDir1 = "/root/music";
     QStringList pathList;
     pathList.append(musicDir);
+    //pathList.append(musicDir1);
     // qDebug()<< pathList[0];
     Playlist *myLike = new Playlist("My Like");
     MusicScanner *scannerDir = new MusicScanner();

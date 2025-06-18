@@ -19,7 +19,7 @@ void MusicScanner::startScan(const QStringList& directories)
 {
     if (m_workerThread && m_workerThread->isRunning()) { stopScan(); }
 
-    m_scanDirectories = directories;
+    m_scanDirectories = directories; // 存放的多个目录
     m_shouldStop = false;
     m_foundSongs.clear();
 
@@ -113,6 +113,11 @@ int MusicScanner::countMusicFiles(const QStringList& directories)
 
     for (const QString& directory : directories) {
         QDirIterator iterator(directory, m_supportedFormats, QDir::Files, QDirIterator::Subdirectories);
+
+        //directory		要扫描的根目录路径（如 "/Music"）
+        //m_supportedFormats文件格式过滤器（如 ["*.mp3", "*.flac"]）
+        //QDir::Files 控制迭代器返回的内容类型 只遍历文件，忽略子目录//QDir::File只返回文件//QDir::Dirs	只返回目录
+        //QDirIterator::Subdirectories 启用递归扫描子目录
         while (iterator.hasNext() && !m_shouldStop) {
             iterator.next();
             count++;

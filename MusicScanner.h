@@ -49,5 +49,5 @@ private:
 
     void scanDirectory(const QString& dirPath, int& processedFiles, int totalFiles); // 递归迭代目录
 
-    int countMusicFiles(const QStringList& directories);
+    int countMusicFiles(const QStringList& directories); // 计算要扫描的文件数
 };
