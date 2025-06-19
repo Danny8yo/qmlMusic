@@ -8,6 +8,7 @@
 #include "songmodel.h"
 #include "playlistmodel.h"
 #include "PlayerController.h"
+#include "DatabaseManager.h"
 
 class BackendManager : public QObject
 {
@@ -35,7 +36,7 @@ public:
     SongModel *songModel() const { return m_songModel; }
     PlaylistModel *playlistModel() const { return m_playlistModel; }
     PlayerController *playerController() const { return m_playerController; }
-
+    //DatabaseManager *dbManager() const { return m_dbManager; }
 
     // QML可调用方法
 
@@ -49,7 +50,11 @@ public:
     //更新视图
     // Q_INVOKABLE void loadSongLibrary();
     // Q_INVOKABLE void loadAllPlaylists();
-    Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
+    //Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
+
+    //
+    //
+    // DatabaseManager测试
 
 signals:
     void scanProgressChanged(int progress);
@@ -72,6 +77,7 @@ private:
     PlaylistModel *m_playlistModel;
     PlayerController *m_playerController;
 
+    DatabaseManager *m_dbManager; //进程崩溃了
+
     void connectSignals();
 };
-

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(qmltest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Multimedia)
 find_package(PkgConfig REQUIRED)
@@ -30,6 +30,8 @@ qt_add_qml_module(appqmltest
     SOURCES songmodel.h songmodel.cpp
     SOURCES playlistmodel.h playlistmodel.cpp
     SOURCES PlayerController.h PlayerController.cpp
+    SOURCES DatabaseManager.h
+    SOURCES DatabaseManager.cpp
 )
 
 set_target_properties(appqmltest PROPERTIES
@@ -45,6 +47,7 @@ target_link_libraries(appqmltest
     PRIVATE
     Qt6::Quick
     Qt6::Multimedia
+    Qt6::Sql
     ${TAGLIB_LIBRARIES}
 )
 # --- 修改结束 ---

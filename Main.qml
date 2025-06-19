@@ -26,6 +26,4 @@ Window {
         text:"sddsds"
     }
 
-
-
 }
