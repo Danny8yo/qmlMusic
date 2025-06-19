@@ -5,7 +5,6 @@ project(qmltest VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
-# 必须显式声明Multimedia模块
 find_package(Qt6 REQUIRED COMPONENTS Core Multimedia)
 find_package(PkgConfig REQUIRED)
 
@@ -27,8 +26,10 @@ qt_add_qml_module(appqmltest
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
     SOURCES playlist.cpp playlist.h
-    SOURCES PlayerController.h
-    SOURCES PlayerController.cpp
+    SOURCES backendmanager.h backendmanager.cpp
+    SOURCES songmodel.h songmodel.cpp
+    SOURCES playlistmodel.h playlistmodel.cpp
+    SOURCES PlayerController.h PlayerController.cpp
 )
 
 set_target_properties(appqmltest PROPERTIES
@@ -50,7 +51,7 @@ target_link_libraries(appqmltest
 
 # (可选但推荐) 明确添加 TagLib 的头文件路径
 target_include_directories(appqmltest PRIVATE ${TAGLIB_INCLUDE_DIRS})
-set(CMAKE_AUTOMOC ON)  # 必须启用元对象系统
+
 include(GNUInstallDirs)
 install(TARGETS appqmltest
     BUNDLE DESTINATION .

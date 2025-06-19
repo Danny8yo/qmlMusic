@@ -19,8 +19,8 @@ class Song : public QObject {
 public:
     // 构造函数
     explicit Song(const QString& filePath, QObject* parent = nullptr);
-    Song(const QString& filePath, const QString& title, const QString& artist,
-         const QString& album, int duration, QObject* parent = nullptr);
+    Song(const QString& filePath, const QString& title,const int id=-1, const QString& artist="unknown",
+         const QString& album="unknown", int duration=0, QObject* parent = nullptr);
     Song(QObject* parent = nullptr); // 默认构造函数
 
     // 使用TagLib从音频文件加载元数据
@@ -39,6 +39,7 @@ public:
     QString filePath() const;
     QUrl coverArtPath() const;
     QString lyricsPath() const;
+    //格式化时长为字符串00:00
     QString durationString() const;
 
     // Setter

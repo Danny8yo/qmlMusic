@@ -22,19 +22,25 @@ Song::Song(const QString &filePath, QObject *parent) : QObject(parent), m_filePa
     loadMetadataFromFile();
 }
 
-Song::Song(const QString &filePath,
-           const QString &title,
-           const QString &artist,
-           const QString &album,
-           int duration,
-           QObject *parent)
-    : QObject(parent)
-    , m_title(title)
-    , m_artist(artist)
-    , m_album(album)
-    , m_duration(duration)
-    , m_filePath(filePath)
-{}
+// Song::Song(const QString &filePath,const QString &title,const QString &artist
+//            ,const QString &album,int duration,QObject *parent)
+//     : QObject(parent)
+//     , m_title(title)
+//     , m_artist(artist)
+//     , m_album(album)
+//     , m_duration(duration)
+//     , m_filePath(filePath)
+//     {}
+
+Song::Song(const QString &filePath, const QString &title, const int id,const QString &artist, const QString &album, int duration, QObject *parent)
+: QObject(parent),
+    m_title(title),
+    m_id(id),
+    m_artist(artist),
+    m_album(album),
+    m_duration(duration),
+    m_filePath(filePath)
+    {}
 
 bool Song::loadMetadataFromFile()
 {
@@ -55,11 +61,18 @@ bool Song::loadMetadataFromFile()
     }
 
     TagLib::Tag *tag = f.tag();
+    /*获取音频属性对象指针
+     歌 曲时长不属于“标签”（Tag，如艺术家、专辑名），而是                                   *
+     属于文件的**“音频属性”（Audio Properties）**。TagLib 提供了专门的接口来访问这些属性。
+     */
+    TagLib::AudioProperties *audioProperties = f.audioProperties();
+
     // toCString(true) 表示使用 UTF-8 编码，这是推荐的做法
     setTitle(QString::fromUtf8(tag->title().toCString(true)));
     // qDebug() << "Title:" << tag->title().toCString(true);
     setArtist(QString::fromUtf8(tag->artist().toCString(true)));
     setAlbum(QString::fromUtf8(tag->album().toCString(true)));
+    setDuration(audioProperties ? audioProperties->lengthInSeconds() : 0);
 
     // 封面部分
     QFileInfo audioFileInfo(m_filePath);
