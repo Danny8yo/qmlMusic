@@ -8,10 +8,15 @@
 #include "backendmanager.h"
 #include "song.h"
 
+//请更改为项目地址
+QString appDir = "/home/lius/Documents/qmlMusic-dev/1/qmlMusic";
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    // static QString appDirPath = QCoreApplication::applicationDirPath();
+    // qDebug() << "项目路径:" << appDirPath;
     // 注册Song类
     qmlRegisterType<Song>("Song", 1, 0, "Song");
 
@@ -26,19 +31,19 @@ int main(int argc, char *argv[])
     engine.loadFromModule("qmltest", "Main");
 
     // 扫描/home/lius/Music/no_cover_mp3s/目录下的歌曲
-    //QString musicDir = "/home/lius/Music/no_cover_mp3s/";
-    QString musicDir = "/root/qmlMusic-dev/qmlMusic/Local_Playlist";
+    QString musicDir = appDir+ "/test_Music/Local_Playlist";
+    // QString musicDir = "/root/qmlMusic-dev/qmlMusic/Local_Playlist";
     QStringList pathList;
     pathList.append(musicDir);
 
     // backendmanager测试
     BackendManager *backend = BackendManager::instance();
 
-    //
     if (!backend->initialize()) {
         qCritical() << "Failed to initialize BackendManager";
         return -1;
     }
+
     // // qDebug()<< pathList[0];
     // Playlist *myLike = new Playlist("My Like");
     // MusicScanner *scannerDir = new MusicScanner();

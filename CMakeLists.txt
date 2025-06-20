@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.16)
 project(qmltest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_AUTORCC ON)
+
 find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Multimedia)
@@ -22,6 +24,7 @@ qt_add_qml_module(appqmltest
     VERSION 1.0
     QML_FILES
         Main.qml
+        PlayController.qml
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
@@ -30,9 +33,32 @@ qt_add_qml_module(appqmltest
     SOURCES songmodel.h songmodel.cpp
     SOURCES playlistmodel.h playlistmodel.cpp
     SOURCES PlayerController.h PlayerController.cpp
-    SOURCES DatabaseManager.h
-    SOURCES DatabaseManager.cpp
+    SOURCES DatabaseManager.cpp DatabaseManager.h
+    SOURCES resource.qrc
+    QML_FILES TopBar.qml Lyrics.qml LeftGuideBar.qml
+    QML_FILES MusicUi.qml
+    QML_FILES Apptheme.qml
 )
+
+# # 单独添加资源文件
+# qt_add_resources(appqmltest "playcontrol_resources"
+#     PREFIX "/"
+#     FILES
+#         resources/circlePause.png
+#         resources/circlePlay.png
+#         resources/listPlay.png
+#         resources/love.png
+#         resources/loved.png
+#         resources/next.png
+#         resources/pause.png
+#         resources/play.png
+#         resources/playlist.png
+#         resources/previous.png
+#         resources/randomPlay.png
+#         resources/redLoved.png
+#         resources/repeatPlay.png
+#         resources/volume.png
+# )
 
 set_target_properties(appqmltest PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}

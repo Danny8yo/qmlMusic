@@ -4,6 +4,9 @@
 #include <QFile>
 #include <QTextStream>
 #include "backendmanager.h"
+#include <QCoreApplication>
+
+extern QString appDir;
 
 BackendManager *BackendManager::s_instance = nullptr;
 
@@ -41,10 +44,10 @@ bool BackendManager::initialize()
     // QDir().mkpath(dbPath); // 确保目录存在
     // db.setDatabaseName(dbPath + "/MusicDatas.db");
 
-    db.setDatabaseName("/root/qmlMusic-dev/qmlMusic/sql/MusicDatas.db"); // 使用内存数据库测试
+    db.setDatabaseName(appDir + "/sql/MusicDatas.db"); // 使用内存数据库测试
     if (!db.open()) {
         //qCritical() << "无法打开数据库:" << db.lastError().text();
-        qCritical() << "数据库路径:";
+        // qCritical() << "数据库路径:" << appDir;
         return false;
     }
 
