@@ -4,6 +4,7 @@
 #include <QAudioOutput>
 #include <QList>
 #include <QTimer>
+#include <QtQml/qqmlregistration.h>
 #include "song.h"
 
 class PlayerController : public QObject
@@ -16,6 +17,7 @@ class PlayerController : public QObject
     Q_PROPERTY(Song* currentSong READ currentSong NOTIFY currentSongChanged)
     Q_PROPERTY(PlaybackMode playbackMode READ playbackMode WRITE setPlaybackMode NOTIFY playbackModeChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY playbackStateChanged)
+    QML_ELEMENT
 
 public:
     enum PlaybackMode {

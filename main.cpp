@@ -9,19 +9,21 @@
 #include "song.h"
 
 //请更改为项目地址
-QString appDir = "/home/lius/Documents/qmlMusic-dev/1/qmlMusic";
-
+// QString appDir = "/home/lius/Documents/qmlMusic-dev/1/qmlMusic";
+QString appDir = "/root/qmlMusic-dev/qmlMusic";
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     // static QString appDirPath = QCoreApplication::applicationDirPath();
     // qDebug() << "项目路径:" << appDirPath;
-    // 注册Song类
-    qmlRegisterType<Song>("Song", 1, 0, "Song");
 
     QQmlApplicationEngine engine;
-
+    // 注册SongModel
+    //engine.loadFromModule("se.qt.songmodel", "Main");
+    //engine.loadFromModule("se.qt.song", "Main");
+    // qmlRegisterType<Song>("Song", 1, 0, "Song");
+    // qmlRegisterType<SongModel>("SongModel", 1, 0, "SongModel");
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

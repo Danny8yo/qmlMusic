@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QtQml/qqmlregistration.h>
 #include <QList>
 #include <QObject>
 #include "playlist.h"
@@ -12,6 +13,7 @@ public:
     explicit PlaylistModel(QObject *parent = nullptr);
 
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
+    QML_ELEMENT
 
 public:
     // 定义角色,QML将通过这些角色名来访问数据

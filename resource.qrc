@@ -22,4 +22,5 @@
         <file>resources/setting.png</file>
         <file>resources/up.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

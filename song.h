@@ -2,7 +2,7 @@
 #include <QObject>
 #include <QString>
 #include <QUrl>
-
+#include <QtQml/qqmlregistration.h>
 class Song : public QObject {
     Q_OBJECT
     // 定义QML可访问的属性
@@ -15,6 +15,7 @@ class Song : public QObject {
     Q_PROPERTY(QUrl coverArtPath READ coverArtPath WRITE setCoverArtPath NOTIFY coverArtPathChanged)
     Q_PROPERTY(QString lyricsPath READ lyricsPath WRITE setLyricsPath NOTIFY lyricsPathChanged)
     Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged) // 提供格式化的时长字符串
+    QML_ELEMENT
 
 public:
     // 构造函数

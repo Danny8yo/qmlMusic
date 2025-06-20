@@ -8,6 +8,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Multimedia)
+
 find_package(PkgConfig REQUIRED)
 
 # 这行会查找 TagLib 并设置 TAGLIB_LIBRARIES 和 TAGLIB_INCLUDE_DIRS 变量
@@ -21,10 +22,12 @@ qt_add_executable(appqmltest
 
 qt_add_qml_module(appqmltest
     URI qmltest
+    # URI "se.qt.songmodel"
+    # URI "se.qt.song"
     VERSION 1.0
     QML_FILES
         Main.qml
-        PlayController.qml
+        qml/PlayController.qml
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
@@ -35,10 +38,13 @@ qt_add_qml_module(appqmltest
     SOURCES PlayerController.h PlayerController.cpp
     SOURCES DatabaseManager.cpp DatabaseManager.h
     SOURCES resource.qrc
-    QML_FILES TopBar.qml Lyrics.qml LeftGuideBar.qml
-    QML_FILES MusicUi.qml
-    QML_FILES Apptheme.qml
+    # QML_FILES qml/TopBar.qml qml/Lyrics.qml qml/LeftGuideBar.qml
+    # QML_FILES qml/MusicUi.qml
+    # QML_FILES qml/Apptheme.qml
+    # QML_FILES qml/PlaylistView.qml
+    QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml  qml/PlaylistView.qml qml/TopBar.qml
 )
+
 
 # # 单独添加资源文件
 # qt_add_resources(appqmltest "playcontrol_resources"
@@ -74,6 +80,7 @@ target_link_libraries(appqmltest
     Qt6::Quick
     Qt6::Multimedia
     Qt6::Sql
+
     ${TAGLIB_LIBRARIES}
 )
 # --- 修改结束 ---

@@ -3,12 +3,14 @@ import QtCore
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
-import Song
+
 
 Window {
     visible:true
     height: 700
     width: 1200
+
+
 
     property alias stack: _stack
 

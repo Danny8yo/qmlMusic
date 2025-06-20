@@ -3,11 +3,12 @@
 #include <QObject>
 #include <QAbstractListModel>
 #include "song.h"
-
+#include <QtQml/qqmlregistration.h>
 class SongModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
+    QML_ELEMENT
 public:
     explicit SongModel(QObject *parent = nullptr);
 

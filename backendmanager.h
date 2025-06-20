@@ -9,13 +9,14 @@
 #include "playlistmodel.h"
 #include "PlayerController.h"
 #include "DatabaseManager.h"
-
+#include <QtQml/qqmlregistration.h>
 class BackendManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(SongModel *songModel READ songModel CONSTANT)
     Q_PROPERTY(PlaylistModel *playlistModel READ playlistModel CONSTANT)
     Q_PROPERTY(PlayerController *playerController READ playerController CONSTANT)
+    QML_ELEMENT
 public:
     explicit BackendManager(QObject *parent = nullptr);
     // 单例模式:某个对象只需要一个实例
