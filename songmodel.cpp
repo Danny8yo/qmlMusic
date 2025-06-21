@@ -48,7 +48,8 @@ QVariant SongModel::data(const QModelIndex &index, int role) const
         return song->filePath();
     case CoverArtRole:
         //后期处理歌曲有封面URL后在实现
-        // return song->coverArtPath().isEmpty() ? "qrc:/resources/images/default_cover.png" : song->coverArtPath();
+        //return song->coverArtPath().isEmpty() ? "qrc:/resources/images/default_cover.png" : song->coverArtPath();
+        return song->coverArtPath();
     case LyricsRole:
         return song->lyricsPath();
     case FormattedDurationRole:

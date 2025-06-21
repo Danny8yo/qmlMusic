@@ -88,6 +88,7 @@ bool Song::loadMetadataFromFile()
     QString coverPath = coverDirPath + "/" + baseName + ".jpg";
 
     setCoverArtPath(QUrl::fromLocalFile(coverPath));
+    qDebug() << m_coverArtPath;
 
     if (title().isEmpty() || title() == "Unknown Title") {
         // qDebug() << "歌曲名称为: "<< this->title();

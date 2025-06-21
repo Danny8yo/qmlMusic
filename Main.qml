@@ -3,6 +3,7 @@ import QtCore
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Dialogs
+import "qml" //分离的组件和其他qml文件一起放在了该文件夹，因此使用分离独立的组件需要导入
 
 
 Window {

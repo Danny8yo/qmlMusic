@@ -1,23 +1,21 @@
 #include "playlist.h"
 
-Playlist::Playlist(QObject* parent)
+Playlist::Playlist(QObject *parent)
     : QObject(parent)
     , m_id(-1)
     , m_name("New Playlist")
     , m_creationDate(QDateTime::currentDateTime())
-{
-}
+{}
 
-Playlist::Playlist(const QString& name, QObject* parent)
+Playlist::Playlist(const QString &name, QObject *parent)
     : QObject(parent)
     , m_id(-1)
     , m_name(name)
     , m_creationDate(QDateTime::currentDateTime())
-{
-}
+{}
 
 //用于创建自定义歌单
-Playlist::Playlist(const int &id,const QString &name, const QString &description,const QDateTime &date,QObject *parent)
+Playlist::Playlist(const int &id, const QString &name, const QString &description, const QDateTime &date, QObject *parent)
     : QObject(parent)
     , m_id(id)
     , m_name(name)
@@ -34,7 +32,7 @@ void Playlist::setId(int id)
     }
 }
 
-void Playlist::setName(const QString& name)
+void Playlist::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
@@ -42,7 +40,7 @@ void Playlist::setName(const QString& name)
     }
 }
 
-void Playlist::setDescription(const QString& description)
+void Playlist::setDescription(const QString &description)
 {
     if (m_description != description) {
         m_description = description;
@@ -50,7 +48,7 @@ void Playlist::setDescription(const QString& description)
     }
 }
 
-void Playlist::setCreationDate(const QDateTime& creationDate)
+void Playlist::setCreationDate(const QDateTime &creationDate)
 {
     if (m_creationDate != creationDate) {
         m_creationDate = creationDate;
@@ -58,6 +56,23 @@ void Playlist::setCreationDate(const QDateTime& creationDate)
     }
 }
 
+void Playlist::setCoverUrl(const QUrl &coverUrl)
+{
+    if (m_songs.size() == 0) {
+        m_coverUrl = QUrl::fromLocalFile("/covers/test_cover.jpg"); // 设置一个默认封面
+    } else {
+        m_coverUrl = coverUrl;
+    }
+    emit coverUrlChanged();
+}
+
+void Playlist::setSongs(const QList<Song *> &songs)
+{
+    if (m_songs != songs) {
+        m_songs = songs;
+        emit songsChanged();
+    }
+}
 void Playlist::addSong(Song *song)
 {
     if (song && !m_songs.contains(song)) {
@@ -70,7 +85,7 @@ void Playlist::addSong(Song *song)
 
 void Playlist::removeSong(int index)
 {
-    if (index >=0 && index < m_songs.size()) {
+    if (index >= 0 && index < m_songs.size()) {
         m_songs.removeAt(index);
         emit songsChanged();
         emit songCountChanged();
@@ -87,9 +102,7 @@ void Playlist::clearSongs()
 
 Song *Playlist::getSong(int index) const
 {
-    if (index >=0 && index<m_songs.size()) {
-        return m_songs.at(index);
-    }
+    if (index >= 0 && index < m_songs.size()) { return m_songs.at(index); }
     qDebug() << "无效的索引:" << index << "歌单歌曲数量:" << m_songs.size();
     return nullptr;
 }
@@ -98,5 +111,3 @@ QList<Song *> Playlist::getAllSongs() const
 {
     return m_songs;
 }
-
-

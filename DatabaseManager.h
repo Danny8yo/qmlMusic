@@ -39,6 +39,7 @@ public:
 
     // 播放列表-歌曲关联(涉及中间表的处理，中间表的描述见开发文档)
     // 中间表是加入了歌单（列表）的歌曲与歌单之间的映射关系
+    Q_INVOKABLE QList<int> searchSongInPlaylist(int playlistId); // 查询某歌单中所有的歌曲的id
     Q_INVOKABLE bool addSongToPlaylist(int songId, int playlistId);
     Q_INVOKABLE bool removeSongFromPlaylist(int songId, int playlistId);
 

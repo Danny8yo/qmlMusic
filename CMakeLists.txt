@@ -42,7 +42,8 @@ qt_add_qml_module(appqmltest
     # QML_FILES qml/MusicUi.qml
     # QML_FILES qml/Apptheme.qml
     # QML_FILES qml/PlaylistView.qml
-    QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml  qml/PlaylistView.qml qml/TopBar.qml
+    QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml   qml/TopBar.qml
+    QML_FILES qml/PlaylistView.qml
 )
 
 
