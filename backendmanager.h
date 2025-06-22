@@ -10,12 +10,16 @@
 #include "PlayerController.h"
 #include "DatabaseManager.h"
 #include <QtQml/qqmlregistration.h>
+
+extern QString appDir;
+
 class BackendManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(SongModel *songModel READ songModel CONSTANT)
     Q_PROPERTY(PlaylistModel *playlistModel READ playlistModel CONSTANT)
     Q_PROPERTY(PlayerController *playerController READ playerController CONSTANT)
+    Q_PROPERTY(QString appDirPath READ appDirPath CONSTANT)
     QML_ELEMENT
 public:
     explicit BackendManager(QObject *parent = nullptr);
@@ -37,34 +41,33 @@ public:
     SongModel *songModel() const { return m_songModel; }
     PlaylistModel *playlistModel() const { return m_playlistModel; }
     PlayerController *playerController() const { return m_playerController; }
-    //DatabaseManager *dbManager() const { return m_dbManager; }
+    QString appDirPath() const { return m_appDir; }
+    // DatabaseManager *dbManager() const { return m_dbManager; }
 
     // QML可调用方法
 
-    //扫描目录,扫描完后,会将歌曲添加进m_scanner的foundSongs列表中,&foundSongs只能通过信号传递
+    // 扫描目录,扫描完后,会将歌曲添加进m_scanner的foundSongs列表中,&foundSongs只能通过信号传递
     Q_INVOKABLE void scanMusicLibrary(const QStringList &directories);
-    //ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
+    // ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
     Q_INVOKABLE void playSongById(int songId);
-    //ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
+    // ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
     Q_INVOKABLE void playPlaylist(int playlistId);
 
-    //更新视图
-    // Q_INVOKABLE void loadSongLibrary();
-    // Q_INVOKABLE void loadAllPlaylists();
-    //Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
+    // 更新视图
+     Q_INVOKABLE void loadSongLibrary();
+     Q_INVOKABLE void loadAllPlaylists();
+    // Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
 
-    //
-    //
     // DatabaseManager测试
 
 signals:
     void scanProgressChanged(int progress);
     void scanFinished();
-    //实例化各板块如音乐扫描器、playerController和各种数据模型后发出信号
+    // 实例化各板块如音乐扫描器、playerController和各种数据模型后发出信号
     void initialized();
 
 private slots:
-    //foundSongs是musicScanner扫描目录后添加的歌曲
+    // foundSongs是musicScanner扫描目录后添加的歌曲
     void onScanFinished(const QList<Song *> &foundSongs);
     // void onCurrentSongChanged();
 
@@ -77,8 +80,9 @@ private:
     SongModel *m_songModel;
     PlaylistModel *m_playlistModel;
     PlayerController *m_playerController;
+    QString m_appDir = appDir; // 应用程序目录路径
 
-    DatabaseManager *m_dbManager; //进程崩溃了
+    DatabaseManager *m_dbManager; // 进程崩溃了
 
     void connectSignals();
 };

@@ -11,17 +11,16 @@ extern QString appDir;
 BackendManager *BackendManager::s_instance = nullptr;
 
 BackendManager::BackendManager(QObject *parent)
-    : QObject(parent)
-    , m_dbManager(nullptr)
-    , m_scanner(nullptr)
-    , m_playerController(nullptr)
-    , m_songModel(nullptr)
-    , m_playlistModel(nullptr)
-{}
+    : QObject(parent), m_dbManager(nullptr), m_scanner(nullptr), m_playerController(nullptr), m_songModel(nullptr), m_playlistModel(nullptr)
+{
+}
 
 BackendManager *BackendManager::instance()
 {
-    if (!s_instance) { s_instance = new BackendManager(); }
+    if (!s_instance)
+    {
+        s_instance = new BackendManager();
+    }
     return s_instance;
 }
 
@@ -35,40 +34,35 @@ QObject *BackendManager::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine
 bool BackendManager::initialize()
 {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    // QString dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/MusicDatas.db";
-    // QDir().mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
-    // db.setDatabaseName(dbPath);
-
-    // 路径有错
-    // QString dbPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    // QDir().mkpath(dbPath); // 确保目录存在
-    // db.setDatabaseName(dbPath + "/MusicDatas.db");
 
     db.setDatabaseName(appDir + "/sql/MusicDatas.db"); // 使用内存数据库测试
-    if (!db.open()) {
-        //qCritical() << "无法打开数据库:" << db.lastError().text();
-        // qCritical() << "数据库路径:" << appDir;
+    if (!db.open())
+    {
         return false;
     }
 
     // 创建DatabaseManager实例
     m_dbManager = new DatabaseManager(db, this);
-    if (!m_dbManager->isDatabaseValid()) {
+    if (!m_dbManager->isDatabaseValid())
+    {
         qCritical() << "Database connection is invalid";
         return false;
     }
 
     Song *song = m_dbManager->getSong(1);
     qDebug() << "从数据库提取";
-    //qDebug() << "从数据库提dsadasdas取";
-    if (!song) { qDebug() << "歌曲为空"; }
+
+    if (!song)
+    {
+        qDebug() << "歌曲为空";
+    }
     qDebug() << song->title() << song->artist();
 
     // 初始化音乐扫描器
     m_scanner = new MusicScanner(this);
 
     // 初始化播放控制器
-    // m_playerController = new PlayerController(this);
+    m_playerController = new PlayerController(this);
 
     // 初始化数据模型
     m_songModel = new SongModel(this);
@@ -78,8 +72,8 @@ bool BackendManager::initialize()
     connectSignals();
 
     // 加载现有数据
-    // loadSongLibrary();
-    // loadAllPlaylists();
+    loadSongLibrary();
+    loadAllPlaylists();
 
     emit initialized();
     return true;
@@ -87,7 +81,8 @@ bool BackendManager::initialize()
 
 void BackendManager::scanMusicLibrary(const QStringList &directories)
 {
-    if (!m_scanner) {
+    if (!m_scanner)
+    {
         qDebug() << "Scanner not initialized";
         return;
     }
@@ -103,7 +98,7 @@ void BackendManager::playSongById(int songId) {}
 
 void BackendManager::playPlaylist(int playlistId) {}
 
-//Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
+// Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
 
 void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
 {
@@ -121,15 +116,27 @@ void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
 
 // }
 
-// void BackendManager::loadAllPlaylists()
-// {
+void BackendManager::loadAllPlaylists()
+{
+    if (!m_dbManager || !m_songModel)
+    {
+        return;
+    }
 
-// }
+    QList<Song *> songs = m_dbManager->getAllSongs();
+    m_songModel->loadSongs(songs);
+}
 
-// void BackendManager::loadSongLibrary()
-// {
+void BackendManager::loadSongLibrary()
+{
+    if (!m_dbManager || !m_playlistModel)
+    {
+        return;
+    }
 
-// }
+    QList<Playlist *> playlists = m_dbManager->getAllPlaylists();
+    m_playlistModel->loadPlaylists(playlists);
+}
 
 void BackendManager::connectSignals()
 {
@@ -138,6 +145,6 @@ void BackendManager::connectSignals()
     connect(m_scanner, &MusicScanner::scanFinished, this, &BackendManager::onScanFinished);
 
     // 连接播放器信号
-    // connect(m_playerController, &PlayerController::currentSongChanged, this, &BackendManager::onCurrentSongChanged);
+    // connect(m_playerController, &PlyerController::currentSongChanged, this, &BackendManager::onCurrentSongChanged);
     // connect(m_playerController, &PlayerController::positionChanged, m_lyricsModel, &LyricsModel::updateCurrentLine);
 }

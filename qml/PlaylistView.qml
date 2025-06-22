@@ -64,7 +64,11 @@ Item {
                        //height:200
                        anchors.centerIn: parent
 
-                       source: "file:///root/MusicTest/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
+                       // source: "file:///root/MusicTest/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
+                       source: {
+                           return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
+                       }
+
                        fillMode: Image.PreserveAspectFit  // 保持比例缩放
                    }
 
@@ -158,87 +162,10 @@ Item {
 
         }
 
-        //下方的矩形(播放列表组件，后面会独立）
-        Rectangle{
-            id:_bottom
+        SongView {
+            id:_songView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#95cac5"
-            ListView {
-                id: songView
-                // Layout.fillWidth: true
-                anchors.fill: parent
-                clip: true
-                spacing: 10  // 行间距
-                //highlightRangeMode: ListView.ApplyRange
-                highlight: Rectangle {
-                    color: "#bdd3d1"
-                    width: songView.width
-                    height: 30
-                    radius: 4  // 可选圆角
-                    //anchors.horizontalCenter: parent.horizontalCenter
-                }
-
-
-
-                // 自定义的Model:
-
-
-                model: ListModel { //最终采用的模型是自定义songModel
-                           id: songModel
-                           // 测试数据（实际使用时通过songModel动态加载）
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第一首歌曲" }
-                           ListElement { lineText: "这是第二首歌曲" }
-                           ListElement { lineText: "这是第三首歌曲" }
-
-                       }
-
-                delegate: Text {
-                    text: lineText  // 假设每行数据有 lineText 属性
-                    color: index === songView.currentIndex ? "#95cac5" : "white"
-                    font.pixelSize: index === songView.currentIndex ? 22 : 16  //
-                    horizontalAlignment: Text.AlignHCenter
-                    width: parent.width
-
-                    TapHandler{
-                        onTapped:{
-                            songView.currentIndex = index
-                            console.log("点击行:", index, "当前高亮行:", songView.currentIndex)// 调试输出
-
-                        }
-                    }
-                }
-
-                Component.onCompleted: positionViewAtIndex(0, ListView.Beginning)
-
-            }
         }
     }
 }

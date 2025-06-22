@@ -12,7 +12,7 @@ class Song : public QObject {
     Q_PROPERTY(QString album READ album WRITE setAlbum NOTIFY albumChanged)
     Q_PROPERTY(int duration READ duration WRITE setDuration NOTIFY durationChanged)
     Q_PROPERTY(QString filePath READ filePath WRITE setFilePath NOTIFY filePathChanged)
-    Q_PROPERTY(QUrl coverArtPath READ coverArtPath WRITE setCoverArtPath NOTIFY coverArtPathChanged)
+    Q_PROPERTY(QUrl coverArtUrl READ coverArtUrl WRITE setCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QString lyricsPath READ lyricsPath WRITE setLyricsPath NOTIFY lyricsPathChanged)
     Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged) // 提供格式化的时长字符串
     QML_ELEMENT
@@ -38,7 +38,7 @@ public:
     QString album() const;
     int duration() const;
     QString filePath() const;
-    QUrl coverArtPath() const;
+    QUrl coverArtUrl() const;
     QString lyricsPath() const;
     //格式化时长为字符串00:00
     QString durationString() const;
@@ -50,7 +50,7 @@ public:
     void setAlbum(const QString& album);
     void setDuration(int duration);
     void setFilePath(const QString& filePath);
-    void setCoverArtPath(const QUrl& coverArtPath);
+    void setCoverArtUrl(const QUrl& coverArtUrl);
     void setLyricsPath(const QString& lyricsPath);
 
 signals:
@@ -61,7 +61,7 @@ signals:
     void albumChanged();
     void durationChanged();
     void filePathChanged();
-    void coverArtPathChanged();
+    void coverArtUrlChanged();
     void lyricsPathChanged();
 
 private:
@@ -72,7 +72,7 @@ private:
     QString m_album = "Unknown Album";
     int m_duration = 0; // 时长（秒）
     QString m_filePath; //音乐路径
-    QUrl m_coverArtPath;
+    QUrl m_coverArtUrl;
     QString m_lyricsPath;
 
     // 辅助函数，用于确保缓存目录存在

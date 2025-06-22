@@ -58,13 +58,44 @@ void Playlist::setCreationDate(const QDateTime& creationDate)
     }
 }
 
+void Playlist::setCoverUrl(const QUrl &coverUrl)
+{
+    if (m_coverUrl != coverUrl) {
+        m_coverUrl = coverUrl;
+        emit coverUrlChanged();
+    }
+}
+
+void Playlist::setSongs(const QList<Song *> &songs)
+{
+    if (m_songs != songs) {
+        m_songs = songs;
+        emit songsChanged();
+    }
+}
+
 void Playlist::addSong(Song *song)
 {
+    // 检查这是否是添加到列表的第一首歌
+    bool isFirstSong = m_songs.isEmpty();
+    qDebug() << "添加歌曲";
+
     if (song && !m_songs.contains(song)) {
         m_songs.append(song);
-        // qDebug() << "添加歌曲" << song->title();
+        qDebug() << "添加歌曲" << song->title();
         emit songsChanged();
         emit songCountChanged();
+    }
+
+    // 如果这是第一首歌，并且它有自己的封面
+    if (isFirstSong && !song->coverArtUrl().isEmpty()) {
+        // 更新内部的封面路径变量
+        m_coverUrl = m_songs.at(0)->coverArtUrl();
+        qDebug() << "已将歌单封面更换为第一首歌曲";
+
+        // 关键：发射NOTIFY信号！
+        // QML中所有绑定到 "coverPath" 属性的UI元素都会自动收到通知并刷新
+        emit coverUrlChanged();
     }
 }
 
@@ -97,6 +128,27 @@ Song *Playlist::getSong(int index) const
 QList<Song *> Playlist::getAllSongs() const
 {
     return m_songs;
+}
+
+
+void Playlist::updateCoverUrl()
+{
+    QUrl newCoverUrl;
+    if (!m_songs.isEmpty() && m_songs.first())
+    {
+        newCoverUrl = m_songs.first()->coverArtUrl();
+    }
+
+    if (newCoverUrl.isEmpty())
+    {
+        newCoverUrl = "qrc:/resources/images/default_playlist.png";
+    }
+
+    if (m_coverUrl != newCoverUrl)
+    {
+        m_coverUrl = newCoverUrl;
+        emit coverUrlChanged();
+    }
 }
 
 

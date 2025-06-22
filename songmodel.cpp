@@ -1,15 +1,15 @@
 #include "songmodel.h"
 
 SongModel::SongModel(QObject *parent)
-    : QAbstractListModel{parent}//设置父类为QAbstractListModel
-{}
+    : QAbstractListModel{parent} // 设置父类为QAbstractListModel
+{
+}
 
 int SongModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return m_songs.size();
 }
-
 
 /*
 QModelIndex 的主要成员函数和用途如下：
@@ -24,16 +24,19 @@ flags()：返回索引对应项的标志，用于指示项的属性，例如是�
 */
 QVariant SongModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || index.row() >= m_songs.size()) {
+    if (!index.isValid() || index.row() >= m_songs.size())
+    {
         return QVariant();
     }
 
-    Song* song = m_songs.at(index.row());
-    if (!song) {
+    Song *song = m_songs.at(index.row());
+    if (!song)
+    {
         return QVariant();
     }
 
-    switch (role) {
+    switch (role)
+    {
     case IdRole:
         return song->id();
     case TitleRole:
@@ -47,12 +50,14 @@ QVariant SongModel::data(const QModelIndex &index, int role) const
     case FilePathRole:
         return song->filePath();
     case CoverArtRole:
-        //后期处理歌曲有封面URL后在实现
-        // return song->coverArtPath().isEmpty() ? "qrc:/resources/images/default_cover.png" : song->coverArtPath();
+        // 后期处理歌曲有封面URL后在实现
+        //  return song->coverArtPath().isEmpty() ? "qrc:/resources/images/default_cover.png" : song->coverArtPath();
+        return song->coverArtUrl();
     case LyricsRole:
         return song->lyricsPath();
     case FormattedDurationRole:
         // return song->formattedDuration();
+        return song->durationString();
     case SongObjectRole:
         return QVariant::fromValue(song);
     default:
@@ -76,18 +81,23 @@ QHash<int, QByteArray> SongModel::roleNames() const
     return roles;
 }
 
-void SongModel::loadSongs(const QList<Song*>& songs)
+void SongModel::loadSongs(const QList<Song *> &songs)
 {
     beginResetModel();
     m_songs = songs;
     m_allSongs = songs; // 保存原始列表用于筛选
     endResetModel();
     emit countChanged();
+
+    for (const auto &song: m_songs) {
+        qDebug() << "加载歌曲:" << song->title() << "艺术家:" << song->artist();
+    }
 }
 
 void SongModel::addSong(Song *song)
 {
-    if (!song || m_songs.contains(song)) {
+    if (!song || m_songs.contains(song))
+    {
         return;
     }
 
@@ -100,12 +110,13 @@ void SongModel::addSong(Song *song)
 
 void SongModel::removeSong(int index)
 {
-    if (index < 0 || index >= m_songs.size()) {
+    if (index < 0 || index >= m_songs.size())
+    {
         return;
     }
 
     beginRemoveRows(QModelIndex(), index, index);
-    Song* song = m_songs.at(index);
+    Song *song = m_songs.at(index);
     m_songs.removeAt(index);
     m_allSongs.removeAll(song);
     endRemoveRows();
@@ -114,7 +125,8 @@ void SongModel::removeSong(int index)
 
 Song *SongModel::getSong(int index) const
 {
-    if (index >=0 && index < m_songs.size()) {
+    if (index >= 0 && index < m_songs.size())
+    {
         return m_songs[index];
     }
     return nullptr;
@@ -132,27 +144,24 @@ void SongModel::clear()
 void SongModel::sortByTitle()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song* a, const Song* b) {
-        return a->title().toLower() < b->title().toLower();
-    });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
+              { return a->title().toLower() < b->title().toLower(); });
     endResetModel();
 }
 
 void SongModel::sortByArtist()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song* a, const Song* b) {
-        return a->artist().toLower() < b->artist().toLower();
-    });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
+              { return a->artist().toLower() < b->artist().toLower(); });
     endResetModel();
 }
 
 void SongModel::sortByAlbum()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song* a, const Song* b) {
-        return a->album().toLower() < b->album().toLower();
-    });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
+              { return a->album().toLower() < b->album().toLower(); });
     endResetModel();
 }
 
@@ -160,16 +169,21 @@ void SongModel::filterByKeyword(const QString &keyword)
 {
     beginResetModel();
 
-    if (keyword.isEmpty()) {
+    if (keyword.isEmpty())
+    {
         m_songs = m_allSongs;
-    } else {
+    }
+    else
+    {
         m_songs.clear();
         QString lowerKeyword = keyword.toLower();
 
-        for (Song* song : m_allSongs) {
+        for (Song *song : m_allSongs)
+        {
             if (song->title().toLower().contains(lowerKeyword) ||
                 song->artist().toLower().contains(lowerKeyword) ||
-                song->album().toLower().contains(lowerKeyword)) {
+                song->album().toLower().contains(lowerKeyword))
+            {
                 m_songs.append(song);
             }
         }

@@ -10,7 +10,14 @@ Window {
     height: 700
     width: 1200
 
-
+    Component{
+        id: _lyricsComponent
+        Lyrics{
+            // Layout.fillWidth: true
+            // Layout.fillHeight: true
+            anchors.fill: parent
+        }
+    }
 
     property alias stack: _stack
 

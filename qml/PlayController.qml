@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qmltest
 
 Rectangle {
     id: playController
@@ -84,7 +85,11 @@ Rectangle {
                         anchors.fill: parent
                         id: _albumCover
                         z:1
-                        source: "file:///home/lius/Documents/qmlMusic-dev/1/qmlMusic/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
+                        // source: "file:///home/lius/Documents/qmlMusic-dev/1/qmlMusic/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
+                        source: {
+                            return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
+                        }
+
                         clip: true
                         fillMode: Image.PreserveAspectCrop
                         smooth: true
@@ -95,26 +100,31 @@ Rectangle {
                         id: _clickToLyrics
                         anchors.fill:parent
                         icon.source: "qrc:/OtherUi/resources/up.png"
-                        z:2
+                        z:1
+                        //添加属性,确认歌词是否被展示
+                        property bool isLyricsShowing: false
 
                         opacity: 0.0
-                        // hoverEnabled: true
                         //设置默认透明,鼠标进入才显示
-                        MouseArea {
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            onEntered: {
-                                _clickToLyrics.opacity = 0.5 // 鼠标进入时显示
+                        onHoveredChanged: {
+                            if (hovered) {
+                                _clickToLyrics.opacity = 0.5; // 鼠标进入时显示
+                            } else {
+                                _clickToLyrics.opacity = 0.0; // 鼠标离开时隐藏
                             }
-                            onExited: {
-                                _clickToLyrics.opacity = 0.0
-                            }
-                            onClicked: {
-                                stack.push(Qt.resolvedUrl("Lyrics.qml"))
-                                // stack.pushEnter(Qt.resolvedUrl("Lyrics.qml"))
-                                // StackView.view.push(Qt.resolvedUrl("Lyrics.qml"))
-
-                                console.log("点击查看歌词")
+                        }
+                        // 修改点击处理
+                        onClicked: {
+                            if (!isLyricsShowing) {
+                                console.log("切换到歌词页面")
+                                stack.push(_lyricsComponent)
+                                isLyricsShowing = true
+                                icon.source = "qrc:/OtherUi/resources/down.png"
+                            } else {
+                                console.log("返回主页面")
+                                stack.pop()
+                                isLyricsShowing = false
+                                icon.source = "qrc:/OtherUi/resources/up.png"
                             }
                         }
                     }
@@ -234,8 +244,10 @@ Rectangle {
                     icon.source: "qrc:/playControl/resources/playlist.png"
                     icon.height: 30
                     icon.width: 30
-                    onClicked: {
 
+                    property bool isPlaylistViewShowing: false
+                    onClicked: {
+                        stack.push(Qt.resolvedUrl("PlaylistView.qml"))
                     }
                 }
             }

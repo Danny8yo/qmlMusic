@@ -87,7 +87,7 @@ bool Song::loadMetadataFromFile()
     // 构造封面文件路径
     QString coverPath = coverDirPath + "/" + baseName + ".jpg";
 
-    setCoverArtPath(QUrl::fromLocalFile(coverPath));
+    setCoverArtUrl(QUrl::fromLocalFile(coverPath));
 
     if (title().isEmpty() || title() == "Unknown Title") {
         // qDebug() << "歌曲名称为: "<< this->title();
@@ -137,7 +137,7 @@ bool Song::loadMetadataFromFile()
 
 //     // 如果文件已存在，则直接使用
 //     if(QFile::exists(coverPath)) {
-//         setCoverArtPath(QUrl::fromLocalFile(coverPath));
+//         setCoverArtUrl(QUrl::fromLocalFile(coverPath));
 //         return true;
 //     }
 
@@ -146,7 +146,7 @@ bool Song::loadMetadataFromFile()
 //     if (coverFile.open(QIODevice::WriteOnly)) {
 //         coverFile.write(pictureFrame->picture().data(), pictureFrame->picture().size());
 //         coverFile.close();
-//         setCoverArtPath(QUrl::fromLocalFile(coverPath));
+//         setCoverArtUrl(QUrl::fromLocalFile(coverPath));
 //         qDebug() << "Extracted cover to:" << coverPath;
 //         return true;
 //     }
@@ -216,9 +216,9 @@ QString Song::filePath() const
 {
     return m_filePath;
 }
-QUrl Song::coverArtPath() const
+QUrl Song::coverArtUrl() const
 {
-    return m_coverArtPath;
+    return m_coverArtUrl;
 }
 QString Song::lyricsPath() const
 {
@@ -286,11 +286,11 @@ void Song::setFilePath(const QString &filePath)
     }
 }
 
-void Song::setCoverArtPath(const QUrl &coverArtPath)
+void Song::setCoverArtUrl(const QUrl &coverArtUrl)
 {
-    if (m_coverArtPath != coverArtPath) {
-        m_coverArtPath = coverArtPath;
-        emit coverArtPathChanged();
+    if (m_coverArtUrl != coverArtUrl) {
+        m_coverArtUrl = coverArtUrl;
+        emit coverArtUrlChanged();
     }
 }
 

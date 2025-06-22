@@ -8,10 +8,7 @@ Item {
     id: lyricsPage
     // width: 1000
     // height: 600
-    //anchors.fill:parent//QML PlayerControl: StackView has detected conflicting anchors.
-                         //Transitions may not execute properly.
-                         //你的 StackView 内部存在锚点(anchors)冲突，会影响页面切换动画的执行。
-    width: parent.width  // 明确设置尺寸
+    width: parent.width
     height: parent.height
     //visible: true 与窗口控制方法会发生QML QQuickWindowQmlImpl*: Conflicting properties 'visible' and 'visibility'
     signal requestClose()

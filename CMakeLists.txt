@@ -5,6 +5,18 @@ project(qmltest VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTORCC ON)
 
+# 设置项目根目录路径
+set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# 将目录宏传递给 C++ 代码
+add_compile_definitions(
+    PROJECT_ROOT_DIR="${PROJECT_ROOT_DIR}"
+    # 针对不同构建类型的资源路径
+    $<$<CONFIG:Debug>:DEBUG_BUILD>
+    $<$<CONFIG:Release>:RELEASE_BUILD>
+)
+
+
 find_package(Qt6 REQUIRED COMPONENTS Sql)
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Core Multimedia)
@@ -22,12 +34,12 @@ qt_add_executable(appqmltest
 
 qt_add_qml_module(appqmltest
     URI qmltest
-    # URI "se.qt.songmodel"
-    # URI "se.qt.song"
     VERSION 1.0
     QML_FILES
-        Main.qml
-        qml/PlayController.qml
+        qml/Main.qml
+    QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml
+    QML_FILES qml/PlaylistView.qml qml/TopBar.qml
+    QML_FILES qml/PlayController.qml qml/SongView.qml
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
@@ -42,29 +54,7 @@ qt_add_qml_module(appqmltest
     # QML_FILES qml/MusicUi.qml
     # QML_FILES qml/Apptheme.qml
     # QML_FILES qml/PlaylistView.qml
-    QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml  qml/PlaylistView.qml qml/TopBar.qml
 )
-
-
-# # 单独添加资源文件
-# qt_add_resources(appqmltest "playcontrol_resources"
-#     PREFIX "/"
-#     FILES
-#         resources/circlePause.png
-#         resources/circlePlay.png
-#         resources/listPlay.png
-#         resources/love.png
-#         resources/loved.png
-#         resources/next.png
-#         resources/pause.png
-#         resources/play.png
-#         resources/playlist.png
-#         resources/previous.png
-#         resources/randomPlay.png
-#         resources/redLoved.png
-#         resources/repeatPlay.png
-#         resources/volume.png
-# )
 
 set_target_properties(appqmltest PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}

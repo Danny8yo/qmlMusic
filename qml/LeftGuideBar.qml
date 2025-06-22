@@ -77,7 +77,8 @@ Rectangle {
                     // anchors.rightMargin: 5
 
                     Text {
-                        anchors.centerIn: parent
+                        // anchors.centerIn: parent
+                        Layout.alignment: Qt.AlignHCenter
                         text: model.title
                         font.pixelSize: 14
                     }
