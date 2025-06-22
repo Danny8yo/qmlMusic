@@ -2,13 +2,11 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QDir>
-#include <QQmlContext>
 #include "PlayerController.h"
 #include "MusicScanner.h"
 #include "playlist.h"
 #include "backendmanager.h"
 #include "song.h"
-#include "songmodel.h"
 
 //请更改为项目地址
 // QString appDir = "/home/lius/Documents/qmlMusic-dev/1/qmlMusic";
@@ -21,7 +19,6 @@ int main(int argc, char *argv[])
     // qDebug() << "项目路径:" << appDirPath;
 
     QQmlApplicationEngine engine;
-
     // 注册SongModel
     //engine.loadFromModule("se.qt.songmodel", "Main");
     //engine.loadFromModule("se.qt.song", "Main");
@@ -33,10 +30,10 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("qmltest", "Main"); //注册
+    engine.loadFromModule("qmltest", "Main");
 
     // 扫描/home/lius/Music/no_cover_mp3s/目录下的歌曲
-    QString musicDir = appDir + "/test_Music/Local_Playlist";
+    QString musicDir = appDir+ "/test_Music/Local_Playlist";
     // QString musicDir = "/root/qmlMusic-dev/qmlMusic/Local_Playlist";
     QStringList pathList;
     pathList.append(musicDir);

@@ -2,7 +2,9 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
-import qmltest// 导入自定义模块
+// import SongModel 1.0
+// import Song 1.0
+import qmltest
 // #f8f8f8
 //  #95cac5
 //  #dac1c1
@@ -162,31 +164,12 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "#95cac5"
-
-            // 使用自定义的Song和SongModel放进ListView中
-            // 但实际上应该由自定义的BackendManager管理这两个类
-            // 这里只是为了单纯的测试
-            Song{
-                id:song
-                title: "爱上了你"
-                artist: "www"
-                album: "fuusd"
-                coverArtPath: "file:///root/qmlMusic-dev/qmlMusic/test_Music/Local_Playlist/covers/The Nights.jpg"
-                filePath: "/root/qmlMusic-dev/qmlMusic/test_Music/Local_Playlist/The Nights.mp3"
-            }
-
-            SongModel{
-                id:songModel
-                Component.onCompleted: addSong(song)
-            }
-
             ListView {
                 id: songView
                 // Layout.fillWidth: true
                 anchors.fill: parent
                 clip: true
                 spacing: 10  // 行间距
-                model: songModel// 自定义的songmodel
                 //highlightRangeMode: ListView.ApplyRange
                 highlight: Rectangle {
                     color: "#bdd3d1"
@@ -196,131 +179,64 @@ Item {
                     //anchors.horizontalCenter: parent.horizontalCenter
                 }
 
-                delegate: Rectangle {
-                    width: songView.width
-                    height: 60
-                    color: index === songView.currentIndex ? "#e3f2fd" :
-                           (index % 2 ? "#f5f5f5" : "white")
-
-                    RowLayout {
-                        anchors.fill: parent
-                        anchors.margins: 5
-                        spacing: 15
-
-                        // 封面（简化示例）
-                        Rectangle {
-                            width: 50
-                            height: 50
-                            color: "#bdd3d1"
-                            radius: 4
-                            Image {
-                                anchors.fill: parent
-                                //source: coverArt || "qrc:/default_cover.png"  // 使用实际封面或默认图
-                                source:model.coverArt
-                                fillMode: Image.PreserveAspectFit
-                            }
-                            // Text {
-                            //     anchors.centerIn: parent
-                            //     text: model.index + 1
-                            //     font.bold: true
-                            // }
-                        }
-
-                        // 歌曲信息
-                        ColumnLayout {
-                            spacing: 2
-                            Text {
-                                text: model.title
-                                font.pixelSize: 16
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
-                            }
-                            Text {
-                                text: model.artist + " · " + model.album
-                                //text:model.coverArt
-                                font.pixelSize: 12
-                                color: "#666"
-                                elide: Text.ElideRight
-                                Layout.fillWidth: true
-                            }
-                        }
-
-                        // 时长
-                        Text {
-                            text: Qt.formatTime(new Date(0, 0, 0, 0, 0, model.duration), "mm:ss")
-                            font.pixelSize: 14
-                            color: "#666"
-                        }
-                    }
-                }
-
 
 
                 // 自定义的Model:
 
 
+                model: ListModel { //最终采用的模型是自定义songModel
+                           id: songModel
+                           // 测试数据（实际使用时通过songModel动态加载）
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第一首歌曲" }
+                           ListElement { lineText: "这是第二首歌曲" }
+                           ListElement { lineText: "这是第三首歌曲" }
 
-                // model: ListModel { //最终采用的模型是自定义songModel
-                //            id: songModel
-                //            // 测试数据（实际使用时通过songModel动态加载）
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第一首歌曲" }
-                //            ListElement { lineText: "这是第二首歌曲" }
-                //            ListElement { lineText: "这是第三首歌曲" }
+                       }
 
-                //        }
+                delegate: Text {
+                    text: lineText  // 假设每行数据有 lineText 属性
+                    color: index === songView.currentIndex ? "#95cac5" : "white"
+                    font.pixelSize: index === songView.currentIndex ? 22 : 16  //
+                    horizontalAlignment: Text.AlignHCenter
+                    width: parent.width
 
-                // delegate: Text {
-                //     text: lineText  // 假设每行数据有 lineText 属性
-                //     color: index === songView.currentIndex ? "#95cac5" : "white"
-                //     font.pixelSize: index === songView.currentIndex ? 22 : 16  //
-                //     horizontalAlignment: Text.AlignHCenter
-                //     width: parent.width
+                    TapHandler{
+                        onTapped:{
+                            songView.currentIndex = index
+                            console.log("点击行:", index, "当前高亮行:", songView.currentIndex)// 调试输出
 
-                //     TapHandler{
-                //         onTapped:{
-                //             songView.currentIndex = index
-                //             console.log("点击行:", index, "当前高亮行:", songView.currentIndex)// 调试输出
-
-                //         }
-                //     }
-                // }
-
-                // 检查模型是否有数据
-                Component.onCompleted: {
-                    //positionViewAtIndex(0, ListView.Beginning)
-                    console.log("模型数据量:", songModel.count)
-                    for(var i=0; i<songModel.count; i++) {
-                        console.log("歌曲", i, ":", songModel.get(i).title)
+                        }
                     }
                 }
-                //Component.onCompleted: positionViewAtIndex(0, ListView.Beginning)
+
+                Component.onCompleted: positionViewAtIndex(0, ListView.Beginning)
 
             }
         }

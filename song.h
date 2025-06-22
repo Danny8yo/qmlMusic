@@ -19,7 +19,6 @@ class Song : public QObject {
 
 public:
     // 构造函数
-    //
     explicit Song(const QString& filePath, QObject* parent = nullptr);
     Song(const QString& filePath, const QString& title,const int id=-1, const QString& artist="unknown",
          const QString& album="unknown", int duration=0, QObject* parent = nullptr);
