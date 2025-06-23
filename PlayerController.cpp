@@ -13,7 +13,7 @@ PlayerController::PlayerController(QObject* parent)
     , m_currentSong(nullptr)
 {
     m_player->setAudioOutput(m_audioOutput);
-    m_audioOutput->setVolume(0.7f); // 默认音量70%
+    m_audioOutput->setVolume(1.0f); // 默认音量70%
 
     // 连接信号
     connect(m_player, &QMediaPlayer::positionChanged, this, &PlayerController::onPositionChanged);
@@ -44,7 +44,12 @@ int PlayerController::volume() const
 
 void PlayerController::play()
 {
-    if (m_currentIndex >= 0 && m_currentIndex < m_playQueue.size()) { m_player->play(); }
+    m_player->play();
+    qDebug() << "start to play" << m_playQueue.size() << m_currentIndex;
+    // if (m_currentIndex >= 0 && m_currentIndex < m_playQueue.size()) {
+    //     m_player->play();
+    //     qDebug() << "start to play";
+    // }
 }
 
 void PlayerController::pause()
@@ -186,9 +191,19 @@ void PlayerController::clearQueue()
 
 void PlayerController::loadQueue(const QList<Song*>& songs)
 {
-    clearQueue();
+    // if (!m_playQueue.isEmpty()) { clearQueue(); }
+
+    // m_playQueue = songs;
+    // emit queueChanged();
+    // 加入新播放队列后要覆盖原队列，因此要clear
+    clearQueue(); // 重置 m_currentIndex = -1
     m_playQueue = songs;
     emit queueChanged();
+
+    // 加入新播放队列后的自动播放逻辑
+    if (!m_playQueue.isEmpty()) {
+        playQueueIndex(0); // 自动设置索引并播放
+    }
 }
 
 void PlayerController::onPositionChanged(qint64 position)

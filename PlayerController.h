@@ -21,8 +21,8 @@ class PlayerController : public QObject
 
 public:
     enum PlaybackMode {
-        Sequential, // 顺序播放
-        Loop,       // 循环播放
+        Sequential, // 顺序播放（列表播放完后不继续播放）
+        Loop,       // 循环播放（列表播放完后从头开始播放）
         Random,     // 随机播放
         RepeatOne   // 单曲循环
     };
@@ -81,7 +81,6 @@ private:
     int m_currentIndex;          //当前索引
     PlaybackMode m_playbackMode; // 播放模式
     Song* m_currentSong;         // 正在播放的歌曲
-
     void updateCurrentSong();     // 更新正在播放的歌曲
     int getNextIndex() const;     //获取下一首歌的索引
     int getPreviousIndex() const; // 获取上一手歌的索引

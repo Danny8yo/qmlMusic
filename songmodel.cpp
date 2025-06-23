@@ -1,9 +1,7 @@
 #include "songmodel.h"
 
-SongModel::SongModel(QObject *parent)
-    : QAbstractListModel{parent} // 设置父类为QAbstractListModel
-{
-}
+SongModel::SongModel(QObject *parent) : QAbstractListModel{parent} // 设置父类为QAbstractListModel
+{}
 
 int SongModel::rowCount(const QModelIndex &parent) const
 {
@@ -24,19 +22,12 @@ flags()：返回索引对应项的标志，用于指示项的属性，例如是�
 */
 QVariant SongModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || index.row() >= m_songs.size())
-    {
-        return QVariant();
-    }
+    if (!index.isValid() || index.row() >= m_songs.size()) { return QVariant(); }
 
     Song *song = m_songs.at(index.row());
-    if (!song)
-    {
-        return QVariant();
-    }
+    if (!song) { return QVariant(); }
 
-    switch (role)
-    {
+    switch (role) {
     case IdRole:
         return song->id();
     case TitleRole:
@@ -86,20 +77,14 @@ void SongModel::loadSongs(const QList<Song *> &songs)
     beginResetModel();
     m_songs = songs;
     m_allSongs = songs; // 保存原始列表用于筛选
+
     endResetModel();
     emit countChanged();
-
-    for (const auto &song: m_songs) {
-        qDebug() << "加载歌曲:" << song->title() << "艺术家:" << song->artist();
-    }
 }
 
 void SongModel::addSong(Song *song)
 {
-    if (!song || m_songs.contains(song))
-    {
-        return;
-    }
+    if (!song || m_songs.contains(song)) { return; }
 
     beginInsertRows(QModelIndex(), m_songs.size(), m_songs.size());
     m_songs.append(song);
@@ -110,10 +95,7 @@ void SongModel::addSong(Song *song)
 
 void SongModel::removeSong(int index)
 {
-    if (index < 0 || index >= m_songs.size())
-    {
-        return;
-    }
+    if (index < 0 || index >= m_songs.size()) { return; }
 
     beginRemoveRows(QModelIndex(), index, index);
     Song *song = m_songs.at(index);
@@ -125,10 +107,7 @@ void SongModel::removeSong(int index)
 
 Song *SongModel::getSong(int index) const
 {
-    if (index >= 0 && index < m_songs.size())
-    {
-        return m_songs[index];
-    }
+    if (index >= 0 && index < m_songs.size()) { return m_songs[index]; }
     return nullptr;
 }
 
@@ -144,24 +123,27 @@ void SongModel::clear()
 void SongModel::sortByTitle()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
-              { return a->title().toLower() < b->title().toLower(); });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b) {
+        return a->title().toLower() < b->title().toLower();
+    });
     endResetModel();
 }
 
 void SongModel::sortByArtist()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
-              { return a->artist().toLower() < b->artist().toLower(); });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b) {
+        return a->artist().toLower() < b->artist().toLower();
+    });
     endResetModel();
 }
 
 void SongModel::sortByAlbum()
 {
     beginResetModel();
-    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b)
-              { return a->album().toLower() < b->album().toLower(); });
+    std::sort(m_songs.begin(), m_songs.end(), [](const Song *a, const Song *b) {
+        return a->album().toLower() < b->album().toLower();
+    });
     endResetModel();
 }
 
@@ -169,21 +151,15 @@ void SongModel::filterByKeyword(const QString &keyword)
 {
     beginResetModel();
 
-    if (keyword.isEmpty())
-    {
+    if (keyword.isEmpty()) {
         m_songs = m_allSongs;
-    }
-    else
-    {
+    } else {
         m_songs.clear();
         QString lowerKeyword = keyword.toLower();
 
-        for (Song *song : m_allSongs)
-        {
-            if (song->title().toLower().contains(lowerKeyword) ||
-                song->artist().toLower().contains(lowerKeyword) ||
-                song->album().toLower().contains(lowerKeyword))
-            {
+        for (Song *song : m_allSongs) {
+            if (song->title().toLower().contains(lowerKeyword) || song->artist().toLower().contains(lowerKeyword)
+                || song->album().toLower().contains(lowerKeyword)) {
                 m_songs.append(song);
             }
         }

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import qmltest
 
+
 Rectangle {
     id: playController
     width: parent.width
@@ -19,24 +20,29 @@ Rectangle {
     ColumnLayout{
         anchors.fill: parent
         // anchors.margins: 5 // 给整体一些边距
-        
+
         // 进度条
         Slider {
             id: progressBar
             from: 0
-            to: 100
-            value: 20 // 示例进度
+            to: BackendManager.playerController.duration
+
+            value: BackendManager.playerController.position
             Layout.fillWidth: true // 填充整个宽度
             Layout.preferredHeight: 5 // 给进度条一个合适的高度，包含把手
             Layout.topMargin: 2 // 顶部留一些边距
             // Layout.bottomMargin: 5 // 底部留一些边距
 
+            onMoved: {
+                    BackendManager.playerController.setPosition(value)
+            }
+
             background: Rectangle {
-                implicitWidth: 200 
+                implicitWidth: 200
                 implicitHeight: 4 // 实际轨道高度
                 radius: 2
                 color: "#cccccc" // 未经过部分为灰色
-                
+
                 // 进度填充
                 Rectangle {
                     width: parent.width * progressBar.position
@@ -80,14 +86,16 @@ Rectangle {
                     Layout.preferredHeight: 60
                     // radius: 8
                     Layout.alignment: Qt.AlignVCenter
-                    
+
                     Image {
                         anchors.fill: parent
                         id: _albumCover
                         z:1
                         // source: "file:///home/lius/Documents/qmlMusic-dev/1/qmlMusic/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
                         source: {
-                            return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
+                            //return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/城里的月光 - 许美静.jpg"
+                            console.log(BackendManager.playerController.currentSong.coverArtUrl)
+                            return BackendManager.playerController.currentSong.coverArtUrl
                         }
 
                         clip: true
@@ -135,15 +143,17 @@ Rectangle {
                 Column {
                     Layout.alignment: Qt.AlignVCenter
                     Layout.fillWidth: true
-                    
+
                     Text {
-                        text: "城里的月光"
+                        //text: "城里的月光"
+                        text:BackendManager.playerController.currentSong.title
                         font.pixelSize: 14
                         font.bold: true
                         color: "#333333"
                     }
                     Text {
-                        text: "许美静"
+                        //text: "许美静"
+                        text:BackendManager.playerController.currentSong.artist
                         font.pixelSize: 12
                         color: "#666666"
                     }
@@ -156,7 +166,7 @@ Rectangle {
             RowLayout {
                 //anchors.centerIn: parent 将按钮组居中
                 anchors.centerIn: parent
-                // Layout.alignment: 
+                // Layout.alignment:
                 spacing: 20 // 设置按钮间固定间距
 
                 ToolButton {
@@ -167,6 +177,7 @@ Rectangle {
                     icon.width: 50
                     icon.source: "qrc:/playControl/resources/previous.png"
                     onClicked: {
+                        BackendManager.playerController.previous()
                         console.log("Previous button clicked")
                     }
                 }
@@ -175,10 +186,21 @@ Rectangle {
                     id: _play
                     Layout.preferredWidth: 70
                     Layout.preferredHeight: 70
-                    icon.source: "qrc:/playControl/resources/circlePlay.png"
+                    //icon.source: "qrc:/playControl/resources/circlePlay.png"
+                    icon.source: BackendManager.playerController.isPlaying ? "qrc:/playControl/resources/circlePause.png" : "qrc:/playControl/resources/circlePlay.png"
                     icon.height: 70
                     icon.width: 70
                     onClicked: {
+
+
+                        if(BackendManager.playerController.isPlaying) {
+                            BackendManager.playerController.pause()
+                        } else if(BackendManager.playerController.currentIndex === -1 && BackendManager.playerController.playQueue.length > 0) {// 如果当前无歌曲且队列不为空，自动从第一首开始
+                            BackendManager.playerController.playQueueIndex(0)
+                        } else {BackendManager.playerController.play()
+                        }
+
+                        //BackendManager.playerController.play()
                         console.log("Play button clicked")
                     }
                 }
@@ -191,6 +213,7 @@ Rectangle {
                     icon.width: 50
                     icon.source: "qrc:/playControl/resources/next.png"
                     onClicked: {
+                        BackendManager.playerController.next()
                         console.log("Next button clicked")
                     }
                 }
@@ -204,10 +227,32 @@ Rectangle {
 
                 ToolButton {
                     id: _playMode
-                    icon.source: "qrc:/playControl/resources/listPlay.png"
+                    icon.source: {
+                        switch(BackendManager.playerController.playbackMode){
+                        case 0:   return "qrc:/playControl/resources/playlist.png"//BackendManager.playerController.Sequential
+                        case 1:   return "qrc:/playControl/resources/listPlay.png"//BackendManager.playerController.Loop
+                        case 2:   return "qrc:/playControl/resources/randomPlay.png"//BackendManager.playerController.Random
+                        case 3:   return "qrc:/playControl/resources/repeatPlay.png"//BackendManager.playerController.RepeatOne
+                        }
+
+                    }
+                        //"qrc:/playControl/resources/listPlay.png"
                     icon.height: 30
                     icon.width: 30
+                    text:{
+                        switch(BackendManager.playerController.playbackMode){
+                        case 0:   return "Seq顺序"//BackendManager.playerController.Sequential
+                        case 1:   return "Loop列表循环"//BackendManager.playerController.Loop
+                        case 2:   return "Random随机"//BackendManager.playerController.Random
+                        case 3:   return "RepeatOne单曲循环"//BackendManager.playerController.RepeatOne
+                        }
+
+                    }
+
                     onClicked: {
+                        let nextMode = (BackendManager.playerController.playbackMode + 1) % 4
+                        BackendManager.playerController.playbackMode = nextMode
+                        console.log(BackendManager.playerController.playbackMode)
                     }
                 }
                 ToolButton {
@@ -225,9 +270,14 @@ Rectangle {
                     id: _volumeSlider
                     from: 0
                     to: 100
-                    value: 50
+                    value: BackendManager.playerController.volume
                     stepSize: 1//步长
                     Layout.preferredWidth: 100
+
+                    onMoved:{
+                        BackendManager.playerController.setVolume(value)
+
+                    }
 
                 }
 
@@ -247,7 +297,7 @@ Rectangle {
 
                     property bool isPlaylistViewShowing: false
                     onClicked: {
-                        stack.push(Qt.resolvedUrl("PlaylistView.qml"))
+                        stack.push(Qt.resolvedUrl("SongView.qml"))
                     }
                 }
             }
