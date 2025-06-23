@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qmltest
 
 
 //顶部组件,包含搜索栏,前后箭头操作StackView,以及用户头像,还有设置图标
@@ -60,7 +61,11 @@ Rectangle{
         //圆形用户头像
             Image {
                 id: _userProfileImage
-                source: "file:///home/lius/Documents/qmlMusic-dev/1/qmlMusic/test_Music/Local_Playlist/covers/I Really want to stay at your house.jpg"
+                // source: "file:///home/lius/Documents/qmlMusic-dev/1/qmlMusic/test_Music/Local_Playlist/covers/I Really want to stay at your house.jpg"
+                source: {
+                    return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/I Really want to stay at your house.jpg"
+                }
+
                 Layout.preferredWidth: 50
                 Layout.preferredHeight: 50
 

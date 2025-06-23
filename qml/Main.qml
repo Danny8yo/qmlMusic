@@ -10,6 +10,7 @@ Window {
     height: 700
     width: 1200
 
+    //歌词stack
     Component{
         id: _lyricsComponent
         Lyrics{
@@ -17,6 +18,14 @@ Window {
             // Layout.fillHeight: true
             anchors.fill: parent
         }
+    }
+
+    Component {
+        id: _playlistComponent
+        SongView{
+            anchors.fill: parent
+        }
+
     }
 
     property alias stack: _stack

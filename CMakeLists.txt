@@ -38,8 +38,8 @@ qt_add_qml_module(appqmltest
     QML_FILES
         qml/Main.qml
     QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml
-    QML_FILES qml/PlaylistView.qml qml/TopBar.qml
-    QML_FILES qml/PlayController.qml qml/SongView.qml
+    QML_FILES qml/PlaylistView.qml qml/TopBar.qml qml/PlaylistGridView.qml
+    QML_FILES qml/PlayController.qml qml/SongView.qml qml/Local.qml
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp

@@ -12,7 +12,7 @@ import qmltest
 // #e8e2e1
 
 Item {
-    id:playlist
+    id:_playlist
     anchors.fill: parent
     visible: true
     // 总体垂直
@@ -23,7 +23,7 @@ Item {
         anchors.fill: parent
         // 顶头退出按钮
         Rectangle{
-            id:headerBar
+            id:_headerBar
             Layout.fillWidth: true
             Layout.preferredHeight: 30
             color: "#dac1c1"
@@ -50,13 +50,13 @@ Item {
                anchors.fill:parent
                spacing: 0
                Rectangle{
-                   id:coverShow
+                   id:_coverShow
                    Layout.fillWidth: true
                    Layout.fillHeight: true
                    //Layout.preferredHeight: 500
                    color: "#dac1c1"
                    Image {
-                       id: cover
+                       id: _cover
                        anchors.fill:parent
                        width: Math.min(parent.width, parent.height) / 2 // 取宽高中的较小值
                        height: width // 强制保持正方形

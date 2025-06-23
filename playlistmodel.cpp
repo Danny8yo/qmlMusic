@@ -1,5 +1,5 @@
 #include "playlistmodel.h"
-#include "songmodel.h"
+// #include "songmodel.h"
 
 PlaylistModel::PlaylistModel(QObject *parent)
     : QAbstractListModel{parent}//设置父类为QAbstractListModel
@@ -31,6 +31,7 @@ QVariant PlaylistModel::data(const QModelIndex& index, int role) const
         return playlist->description();
     case CoverUrlRole:
         // return playlist->coverUrl().isEmpty() ? "qrc:/resources/images/default_playlist.png" : playlist->coverUrl();
+        return playlist->coverUrl();
     case SongCountRole:
         return playlist->songCount();
     case CreationDateRole:

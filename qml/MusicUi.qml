@@ -25,12 +25,14 @@ Item {
                 Layout.preferredHeight: 60 // 固定高度
             }
 
-            Rectangle {
+            //测试歌单页面
+            PlaylistGridView {
+                id: _playlistGridView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                color: "#2b2c2e"
-
+                // anchors.top: _topBar.bottom // 位置在导航栏下方
             }
+
         }
     }
 }

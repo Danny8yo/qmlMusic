@@ -11,29 +11,9 @@ Rectangle{
     Layout.fillHeight: true
     color: "#95cac5"
 
-    // 使用自定义的Song和SongModel放进ListView中
-    // 但实际上应该由自定义的BackendManager管理这两个类
-    // 这里只是为了单纯的测试
-    // Song{
-    //     id:song
-    //     title: "爱上了你"
-    //     artist: "www"
-    //     album: "fuusd"
-    //     coverArtPath: "file:///root/qmlMusic-dev/qmlMusic/test_Music/Local_Playlist/covers/The Nights.jpg"
-    //     filePath: "/root/qmlMusic-dev/qmlMusic/test_Music/Local_Playlist/The Nights.mp3"
-    //     duration: 122
-    // }
-
-    // SongModel{
-    //     id:songModel
-    //     Component.onCompleted:
-    //         addSong(song)
-
-    // }
-
 
     ListView {
-        id: songView
+        id: _songView
         // Layout.fillWidth: true
         anchors.fill: parent
         clip: true
@@ -44,7 +24,7 @@ Rectangle{
         //highlightRangeMode: ListView.ApplyRange
         highlight: Rectangle {
             color: "#bdd3d1"
-            width: songView.width
+            width: _songView.width
             height: 30
             radius: 4  // 可选圆角
             //anchors.horizontalCenter: parent.horizontalCenter
@@ -52,7 +32,7 @@ Rectangle{
         }
 
         delegate: Rectangle {
-            width: songView.width
+            width: _songView.width
             height: 60
             // color: index === songView.currentIndex ? "#e3f2fd" :
             //        (index % 2 ? "#f5f5f5" : "white")
@@ -157,6 +137,5 @@ Rectangle{
                 console.log("模型数据量变化:", BackendManager.songModel.count)
             }
         }
-
     }
 }

@@ -294,10 +294,18 @@ Rectangle {
                     icon.source: "qrc:/playControl/resources/playlist.png"
                     icon.height: 30
                     icon.width: 30
+                    property bool _isListshowing: false
 
-                    property bool isPlaylistViewShowing: false
                     onClicked: {
-                        stack.push(Qt.resolvedUrl("SongView.qml"))
+                        if (_isListshowing) {
+                            console.log("隐藏播放列表")
+                            stack.pop()
+                            _isListshowing = false
+                        } else {
+                            console.log("显示播放列表")
+                            stack.push(_playlistComponent)
+                            _isListshowing = true
+                        }
                     }
                 }
             }
