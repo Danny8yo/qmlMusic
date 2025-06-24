@@ -298,12 +298,12 @@ Rectangle {
 
                     onClicked: {
                         if (_isListshowing) {
-                            console.log("隐藏播放列表")
+                            console.log("隐藏播放队列")
                             stack.pop()
                             _isListshowing = false
                         } else {
-                            console.log("显示播放列表")
-                            stack.push(_playlistComponent)
+                            console.log("显示播放队列")
+                            stack.push(_playQueueComponent)
                             _isListshowing = true
                         }
                     }

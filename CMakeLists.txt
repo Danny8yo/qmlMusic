@@ -40,6 +40,7 @@ qt_add_qml_module(appqmltest
     QML_FILES qml/Apptheme.qml qml/LeftGuideBar.qml qml/Lyrics.qml qml/MusicUi.qml
     QML_FILES qml/PlaylistView.qml qml/TopBar.qml qml/PlaylistGridView.qml
     QML_FILES qml/PlayController.qml qml/SongView.qml qml/Local.qml
+    QML_FILES qml/MyFavoritesView.qml qml/ScanMusicView.qml qml/PlayQueueView.qml
     SOURCES song.h song.cpp
     SOURCES MusicScanner.h
     SOURCES MusicScanner.cpp
@@ -50,10 +51,6 @@ qt_add_qml_module(appqmltest
     SOURCES PlayerController.h PlayerController.cpp
     SOURCES DatabaseManager.cpp DatabaseManager.h
     SOURCES resource.qrc
-    # QML_FILES qml/TopBar.qml qml/Lyrics.qml qml/LeftGuideBar.qml
-    # QML_FILES qml/MusicUi.qml
-    # QML_FILES qml/Apptheme.qml
-    # QML_FILES qml/PlaylistView.qml
 )
 
 set_target_properties(appqmltest PROPERTIES

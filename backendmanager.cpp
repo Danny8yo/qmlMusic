@@ -11,17 +11,16 @@ extern QString appDir;
 BackendManager *BackendManager::s_instance = nullptr;
 
 BackendManager::BackendManager(QObject *parent)
-    : QObject(parent)
-    , m_dbManager(nullptr)
-    , m_scanner(nullptr)
-    , m_playerController(nullptr)
-    , m_songModel(nullptr)
-    , m_playlistModel(nullptr)
-{}
+    : QObject(parent), m_dbManager(nullptr), m_scanner(nullptr), m_playerController(nullptr), m_songModel(nullptr), m_playlistModel(nullptr)
+{
+}
 
 BackendManager *BackendManager::instance()
 {
-    if (!s_instance) { s_instance = new BackendManager(); }
+    if (!s_instance)
+    {
+        s_instance = new BackendManager();
+    }
     return s_instance;
 }
 
@@ -37,11 +36,15 @@ bool BackendManager::initialize()
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
 
     db.setDatabaseName(appDir + "/sql/MusicDatas.db"); // 使用内存数据库测试
-    if (!db.open()) { return false; }
+    if (!db.open())
+    {
+        return false;
+    }
 
     // 创建DatabaseManager实例
     m_dbManager = new DatabaseManager(db, this);
-    if (!m_dbManager->isDatabaseValid()) {
+    if (!m_dbManager->isDatabaseValid())
+    {
         qCritical() << "Database connection is invalid";
         return false;
     }
@@ -49,11 +52,14 @@ bool BackendManager::initialize()
     Song *song = m_dbManager->getSong(1);
     qDebug() << "从数据库提取";
 
-    if (!song) { qDebug() << "歌曲为空"; }
+    if (!song)
+    {
+        qDebug() << "歌曲为空";
+    }
     qDebug() << song->title() << song->artist();
 
     // 初始化音乐扫描器
-    //m_scanner = new MusicScanner(this);
+    // m_scanner = new MusicScanner(this);
 
     // 初始化播放控制器
     m_playerController = new PlayerController(this);
@@ -75,7 +81,8 @@ bool BackendManager::initialize()
 
 void BackendManager::scanMusicLibrary(const QStringList &directories)
 {
-    if (!m_scanner) {
+    if (!m_scanner)
+    {
         qDebug() << "Scanner not initialized";
         return;
     }
@@ -89,7 +96,56 @@ void BackendManager::scanMusicLibrary(const QStringList &directories)
 
 void BackendManager::playSongById(int songId) {}
 
-void BackendManager::playPlaylist(int playlistId) {}
+void BackendManager::playPlaylist(int playlistId)
+{
+    Playlist *playlist = getPlaylistById(playlistId);
+    if (playlist && m_playerController)
+    {
+        QList<Song *> songs = playlist->getAllSongs();
+        if (!songs.isEmpty())
+        {
+            m_playerController->loadQueue(songs);
+            qDebug() << "开始播放歌单:" << playlist->name();
+        }
+        else
+        {
+            qDebug() << "歌单为空:" << playlist->name();
+        }
+    }
+    else
+    {
+        qDebug() << "找不到指定的歌单，ID:" << playlistId;
+    }
+}
+
+Playlist *BackendManager::getPlaylistById(int playlistId)
+{
+    if (!m_playlistModel)
+    {
+        return nullptr;
+    }
+
+    // 遍历播放列表模型查找指定ID的播放列表
+    for (int i = 0; i < m_playlistModel->rowCount(); ++i)
+    {
+        Playlist *playlist = m_playlistModel->getPlaylist(i);
+        if (playlist && playlist->id() == playlistId)
+        {
+            return playlist;
+        }
+    }
+    return nullptr;
+}
+
+Playlist *BackendManager::getPlaylistByIndex(int index)
+{
+    if (!m_playlistModel || index < 0 || index >= m_playlistModel->rowCount())
+    {
+        return nullptr;
+    }
+
+    return m_playlistModel->getPlaylist(index);
+}
 
 // Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
 
@@ -111,18 +167,24 @@ void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
 
 void BackendManager::loadAllPlaylists()
 {
-    if (!m_dbManager || !m_songModel) { return; }
+    if (!m_dbManager || !m_songModel)
+    {
+        return;
+    }
 
     QList<Song *> songs = m_dbManager->getAllSongs();
     m_songModel->loadSongs(songs);
-    //qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
-    m_playerController->loadQueue(songs); //让音乐控制器加载播放列表（测试）
-    //qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
+    // qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
+    m_playerController->loadQueue(songs); // 让音乐控制器加载播放列表（测试）
+    // qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
 }
 
 void BackendManager::loadSongLibrary()
 {
-    if (!m_dbManager || !m_playlistModel) { return; }
+    if (!m_dbManager || !m_playlistModel)
+    {
+        return;
+    }
 
     QList<Playlist *> playlists = m_dbManager->getAllPlaylists();
     m_playlistModel->loadPlaylists(playlists);

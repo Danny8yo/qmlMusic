@@ -7,11 +7,9 @@ Rectangle {
     id: sideBar
     width: 200
     color: "#d2d2d2"
-
-    // property int selectedIndex: 0
-
-    // signal itemClicked(int index)
-    // signal scanMusicClicked()
+    
+    // 导航信号
+    signal navigationRequested(string page)
 
     ColumnLayout {
         anchors.fill: parent
@@ -43,9 +41,9 @@ Rectangle {
             }
 
             model: ListModel {
-                ListElement { title: "发现"}
-                ListElement { title: "我的喜欢"}
-                ListElement { title: "本地音乐"}
+                ListElement { title: "发现"; page: "discover" }
+                ListElement { title: "我的喜欢"; page: "favorites" }
+                ListElement { title: "本地音乐"; page: "local" }
             }
 
             // 滚动条 (可选)
@@ -79,12 +77,6 @@ Rectangle {
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                         }
-                        // font {
-                        //     pixelSize: 14
-                        //     bold: true
-                        // }
-                        // font.pixelSize: 14
-                        // font.bold: true
 
                         background: Rectangle {
                             color: parent.hovered ? "#e0e0e0" : "#d2d2d2"
@@ -92,47 +84,37 @@ Rectangle {
 
                         TapHandler {
                             onTapped: {
-                                // sideBar.selectedIndex = index;
-                                // sideBar.itemClicked(index);
                                 console.log("Clicked:", model.title);
-                                // 可以在这里添加导航逻辑
+                                //将点击的页面传递出去
+                                sideBar.navigationRequested(model.page)
                             }
                         }
                     }
-
-                    // Text {
-                    //     // anchors.centerIn: parent
-                    //     Layout.alignment: Qt.AlignHCenter
-                    //     text: model.title
-                    //     font.pixelSize: 14
-                    // }
                 }
             }
         }
-
-        // Rectangle {
-        //     Layout.fillWidth: true
-        //     height: 1
-        //     // color: appTheme.borderColor
-        // }
 
         // 功能按钮
         Button {
             Layout.fillWidth: true
             text: "扫描音乐"
 
-            // background: Rectangle {
-            //     color: parent.hoverd? "#e0e0e0" : "#d2d2d2"
-            //     radius: 4
-            // }
-
             contentItem: Text {
                 text: parent.text
-                // color: "black"
                 horizontalAlignment: Text.AlignHCenter
-                // verticalAlignment: Text.AlignVCenter
             }
-
+            
+            background: Rectangle {
+                color: parent.hovered ? "#e0e0e0" : "#d2d2d2"
+                radius: 4
+            }
+            
+            TapHandler {
+                onTapped: {
+                    console.log("Clicked: 扫描音乐")
+                    sideBar.navigationRequested("scan")
+                }
+            }
         }
 
         Item {

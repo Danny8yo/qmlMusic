@@ -1,3 +1,4 @@
+//该页面
 import QtQuick
 import qmltest
 import QtQuick.Layouts
@@ -5,19 +6,9 @@ import QtQuick.Controls
 
 Rectangle {
     color: "lightgrey"
-
-    // ColumnLayout{
-    //     anchors.fill: parent
-
-    //     Text {
-    //         Layout.fillWidth: true
-    //         Layout.preferredHeight: 50
-    //         text: qsTr("发现")
-    //         font.pixelSize: 36
-    //         font.bold: true
-    //         color: "black"
-
-    //     }
+    
+    // 导航信号
+    signal playlistRequested(var playlistId)
 
         GridView {
             id: _playlistGrid
@@ -54,7 +45,9 @@ Rectangle {
                         id: tapHandler
                         onTapped: {
                             console.log("点击歌单:", model.name)
-                            // 这里可以添加点击歌单的逻辑
+                            console.log("歌单ID: ",model.id)
+                            // 发射导航信号
+                            playlistRequested(model.id)
                         }
                     }
 
@@ -64,6 +57,7 @@ Rectangle {
                             if (hovered) {
                                 // console.log("鼠标进入歌单")
                                 _contentRect.color = "#e8e8e8"
+                                // console.log("当前鼠标进入歌单ID为:",model.id)
                             } else {
                                 // console.log("鼠标离开歌单")
                                 _contentRect.color = "transparent"
@@ -146,25 +140,25 @@ Rectangle {
             }
 
             Component.onCompleted: {
-                console.log("=== PlaylistGridView 调试信息 ===")
-                console.log("BackendManager 是否存在:", typeof BackendManager !== 'undefined')
-                console.log("BackendManager 对象:", BackendManager)
+                // console.log("=== PlaylistGridView 调试信息 ===")
+                // console.log("BackendManager 是否存在:", typeof BackendManager !== 'undefined')
+                // console.log("BackendManager 对象:", BackendManager)
 
-                if (BackendManager) {
-                    console.log("BackendManager.playlistModel:", BackendManager.playlistModel)
-                    console.log("BackendManager.playlistModel 是否为 null:", BackendManager.playlistModel === null)
-                    console.log("BackendManager.playlistModel 是否为 undefined:", BackendManager.playlistModel === undefined)
+            //     if (BackendManager) {
+            //         console.log("BackendManager.playlistModel:", BackendManager.playlistModel)
+            //         console.log("BackendManager.playlistModel 是否为 null:", BackendManager.playlistModel === null)
+            //         console.log("BackendManager.playlistModel 是否为 undefined:", BackendManager.playlistModel === undefined)
 
-                    if (BackendManager.playlistModel) {
-                        console.log("GridView 模型数据量:", BackendManager.playlistModel.count)
-                        console.log("GridView rowCount:", BackendManager.playlistModel.rowCount())
-                    } else {
-                        console.log("playlistModel 为 null 或 undefined!")
-                    }
-                } else {
-                    console.log("BackendManager 为 undefined!")
-                }
-                console.log("========================")
+            //         if (BackendManager.playlistModel) {
+            //             console.log("GridView 模型数据量:", BackendManager.playlistModel.count)
+            //             console.log("GridView rowCount:", BackendManager.playlistModel.rowCount())
+            //         } else {
+            //             console.log("playlistModel 为 null 或 undefined!")
+            //         }
+            //     } else {
+            //         console.log("BackendManager 为 undefined!")
+            //     }
+            //     console.log("========================")
             }
 
             // 添加延迟检查

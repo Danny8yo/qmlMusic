@@ -191,20 +191,3 @@ Item {
         }
     }
 }
-// 暴露窗口控制方法
-    // function minimizeWindow() {
-    //     visibility = Window.Minimized
-    // }
-    // function toggleMaximize() {
-    //     visibility = (visibility === Window.Maximized) ? Window.Windowed : Window.Maximized
-    // }
-    // function hideWindow() {
-    //     visibility = Window.Hidden
-    // }
-// // 顶端自定义组件
-// TopBar{
-
-//     onMinimizeClicked: root.minimizeWindow()
-//     // onMaximizeClicked: root.toggleMaximize()
-//     // onHideClicked: root.hideWindow()
-// }

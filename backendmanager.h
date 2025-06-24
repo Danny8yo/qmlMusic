@@ -53,9 +53,13 @@ public:
     // ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
     Q_INVOKABLE void playPlaylist(int playlistId);
 
+    // 获取特定播放列表
+    Q_INVOKABLE Playlist *getPlaylistById(int playlistId);
+    Q_INVOKABLE Playlist *getPlaylistByIndex(int index);
+
     // 更新视图
-     Q_INVOKABLE void loadSongLibrary();
-     Q_INVOKABLE void loadAllPlaylists();
+    Q_INVOKABLE void loadSongLibrary();
+    Q_INVOKABLE void loadAllPlaylists();
     // Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
 
     // DatabaseManager测试

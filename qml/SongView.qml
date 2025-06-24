@@ -1,3 +1,4 @@
+//该页面用于自定义显示导入的全部歌曲
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -10,7 +11,6 @@ Rectangle{
     Layout.fillWidth: true
     Layout.fillHeight: true
     color: "#95cac5"
-
 
     ListView {
         id: _songView
@@ -36,7 +36,7 @@ Rectangle{
             height: 60
             // color: index === songView.currentIndex ? "#e3f2fd" :
             //        (index % 2 ? "#f5f5f5" : "white")
-            color: index === songView.currentIndex ? "white" : "#95cac5"
+            color: index === _songView.currentIndex ? "white" : "#95cac5"
 
             RowLayout {
                 anchors.fill: parent

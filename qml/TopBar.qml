@@ -10,6 +10,14 @@ Rectangle{
     width: parent.width
     height: parent.height
     color: "lightgrey"
+    
+    // 导航信号
+    signal backRequested()
+    signal forwardRequested()
+    
+    // 按钮状态属性
+    property bool backEnabled: false
+    property bool forwardEnabled: false
 
     RowLayout{
         anchors.fill: parent
@@ -22,16 +30,24 @@ Rectangle{
             ToolButton{
                 id: _backButton
                 icon.source: "qrc:/OtherUi/resources/back.png"
-                // Layout.preferredWidth: 25
-                // Layout.preferredHeight: 25
                 icon.height: 25
                 icon.width: 25
+                enabled: _topBar.backEnabled
+                
+                TapHandler {
+                    onTapped: _topBar.backRequested()
+                }
             }
             ToolButton{
                 id: _forwardButton
                 icon.source: "qrc:/OtherUi/resources/forward.png"
                 icon.height: 25
                 icon.width: 25
+                enabled: _topBar.forwardEnabled
+                
+                TapHandler {
+                    onTapped: _topBar.forwardRequested()
+                }
             }
 
             //搜索框

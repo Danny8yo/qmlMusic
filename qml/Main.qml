@@ -20,13 +20,27 @@ Window {
         }
     }
 
+    // 播放队列组件
     Component {
-        id: _playlistComponent
-        SongView{
-            anchors.fill: parent
+        id: _playQueueComponent
+        PlayQueueView {
+            width: parent.width
+            height: parent.height
         }
-
     }
+
+    // Component {
+    //     id: _playlistComponent
+    //     // SongView{
+    //     //     anchors.fill: parent
+    //     // }
+    //     PlaylistView{
+    //         anchors.fill:parent
+    //     }
+
+    //     //绑定PlaylistView.qml中的列表
+
+    // }
 
     property alias stack: _stack
 
