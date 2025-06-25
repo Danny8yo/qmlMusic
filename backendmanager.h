@@ -9,6 +9,7 @@
 #include "playlistmodel.h"
 #include "PlayerController.h"
 #include "DatabaseManager.h"
+#include "LyricsExtractor.h"
 #include <QtQml/qqmlregistration.h>
 
 extern QString appDir;
@@ -18,7 +19,9 @@ class BackendManager : public QObject
     Q_OBJECT
     Q_PROPERTY(SongModel *songModel READ songModel CONSTANT)
     Q_PROPERTY(PlaylistModel *playlistModel READ playlistModel CONSTANT)
+    Q_PROPERTY(PlaylistModel *locallistModel READ locallistModel CONSTANT)
     Q_PROPERTY(PlayerController *playerController READ playerController CONSTANT)
+    Q_PROPERTY(LyricsExtractor *lyricsExtractor READ lyricsExtractor CONSTANT)
     Q_PROPERTY(QString appDirPath READ appDirPath CONSTANT)
     QML_ELEMENT
 public:
@@ -40,7 +43,9 @@ public:
     // 公开的模型和控制器
     SongModel *songModel() const { return m_songModel; }
     PlaylistModel *playlistModel() const { return m_playlistModel; }
+    PlaylistModel *locallistModel() const { return m_locallistModel; }
     PlayerController *playerController() const { return m_playerController; }
+    LyricsExtractor *lyricsExtractor() const { return m_lyricsExtractor; }
     QString appDirPath() const { return m_appDir; }
     // DatabaseManager *dbManager() const { return m_dbManager; }
 
@@ -53,14 +58,29 @@ public:
     // ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
     Q_INVOKABLE void playPlaylist(int playlistId);
 
+    // 获取特定歌曲
+    Q_INVOKABLE Song *getSongById(int songId);
+
     // 获取特定播放列表
     Q_INVOKABLE Playlist *getPlaylistById(int playlistId);
     Q_INVOKABLE Playlist *getPlaylistByIndex(int index);
+    // 获取本地特定播放列表
+    Q_INVOKABLE Playlist *getLocalPlaylistById(int playlistId);
+    Q_INVOKABLE Playlist *getLocalPlaylistByIndex(int index);
+
+    // 添加歌曲到播放列表
+    Q_INVOKABLE void addSongToPlaylist(Song *song, Playlist *playlist);
 
     // 更新视图
     Q_INVOKABLE void loadSongLibrary();
     Q_INVOKABLE void loadAllPlaylists();
     // Q_INVOKABLE Playlist *createPlaylist(const QString &name, const QString &description = "");
+
+    // 创建Playlist，Song对象(从数据库导入的只是模拟服务器)
+    Q_INVOKABLE Playlist *createLocalPlaylist(const QString &listname); // 创建“我的歌单”时使用
+    //Q_INVOKABLE Song *createSong();
+    // 删除歌单（本地）
+    //Q_INVOKABLE void removeLocalPlaylist(Playlist *playlist);
 
     // DatabaseManager测试
 
@@ -82,8 +102,10 @@ private:
     MusicScanner *m_scanner;
     // QML数据模型
     SongModel *m_songModel;
-    PlaylistModel *m_playlistModel;
+    PlaylistModel *m_playlistModel;  //发现（网页）歌单model,非用户创建的歌单
+    PlaylistModel *m_locallistModel; // 本地歌单model
     PlayerController *m_playerController;
+    LyricsExtractor *m_lyricsExtractor;
     QString m_appDir = appDir; // 应用程序目录路径
 
     DatabaseManager *m_dbManager; // 进程崩溃了

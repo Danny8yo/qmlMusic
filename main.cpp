@@ -2,21 +2,23 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QDir>
+#include <QStringList>
+#include <QDebug>
 #include "PlayerController.h"
 #include "MusicScanner.h"
 #include "playlist.h"
 #include "backendmanager.h"
 #include "song.h"
+#include "LyricsExtractor.h"
 
-
-//设置项目根目录地址
+// 设置项目根目录地址
 QString appDir = QString(PROJECT_ROOT_DIR);
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    //关键: 在qml引擎创建前 初始化管理器
+    // 关键: 在qml引擎创建前 初始化管理器
     BackendManager *backend = BackendManager::instance();
     qDebug() << "backmanager初始化完成";
 
@@ -44,7 +46,6 @@ int main(int argc, char *argv[])
         { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
     engine.loadFromModule("qmltest", "Main");
-
 
     return app.exec();
 }

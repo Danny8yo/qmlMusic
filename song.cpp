@@ -19,6 +19,15 @@ Song::Song(QObject *parent) : QObject(parent) {}
 Song::Song(const QString &filePath, QObject *parent) : QObject(parent), m_filePath(filePath)
 {
     // 构造时自动加载元数据
+    TagLib::FileRef f(m_filePath.toLocal8Bit().constData());
+    TagLib::Tag *tag = f.tag();
+    /*获取音频属性对象指针
+     歌 曲时长不属于“标签”（Tag，如艺术家、专辑名），而是                                   *
+     属于文件的**“音频属性”（Audio Properties）**。TagLib 提供了专门的接口来访问这些属性。
+     */
+    setDuration(f.audioProperties() ? f.audioProperties()->lengthInSeconds() : 0);
+    // qDebug() << "构造时设置歌曲时间: " << m_duration;
+
     loadMetadataFromFile();
 }
 
@@ -72,7 +81,6 @@ bool Song::loadMetadataFromFile()
     // qDebug() << "Title:" << tag->title().toCString(true);
     setArtist(QString::fromUtf8(tag->artist().toCString(true)));
     setAlbum(QString::fromUtf8(tag->album().toCString(true)));
-    setDuration(audioProperties ? audioProperties->lengthInSeconds() : 0);
 
     // 封面部分
     QFileInfo audioFileInfo(m_filePath);
@@ -104,92 +112,6 @@ bool Song::loadMetadataFromFile()
     return true;
 }
 
-// bool Song::extractEmbeddedCover()
-// {
-//     TagLib::MPEG::File file(m_filePath.toStdWString().c_str());
-//     if (!file.isValid() || !file.ID3v2Tag()) {
-//         return false;
-//     }
-
-//     TagLib::ID3v2::Tag *id3v2tag = file.ID3v2Tag();
-//     const auto frameList = id3v2tag->frameListMap()["APIC"];
-
-//     if (frameList.isEmpty()) {
-//         return false;
-//     }
-
-//     auto pictureFrame = static_cast<TagLib::ID3v2::AttachedPictureFrame *>(frameList.front());
-//     if (!pictureFrame) {
-//         return false;
-//     }
-
-//     // 创建缓存路径
-//     QString cacheDir = ensureCachePath("covers");
-//     QString fileSuffix;
-//     QString mimeType = pictureFrame->mimeType().toCString();
-//     if (mimeType == "image/jpeg") fileSuffix = ".jpg";
-//     else if (mimeType == "image/png") fileSuffix = ".png";
-//     else fileSuffix = ".jpg"; // 默认
-
-//     // 使用歌曲信息的哈希值或唯一标识来创建文件名，避免冲突
-//     QString coverFileName = QString::number(qHash(m_artist + m_album + m_title)) + fileSuffix;
-//     QString coverPath = cacheDir + "/" + coverFileName;
-
-//     // 如果文件已存在，则直接使用
-//     if(QFile::exists(coverPath)) {
-//         setCoverArtUrl(QUrl::fromLocalFile(coverPath));
-//         return true;
-//     }
-
-//     // 将封面数据写入文件
-//     QFile coverFile(coverPath);
-//     if (coverFile.open(QIODevice::WriteOnly)) {
-//         coverFile.write(pictureFrame->picture().data(), pictureFrame->picture().size());
-//         coverFile.close();
-//         setCoverArtUrl(QUrl::fromLocalFile(coverPath));
-//         qDebug() << "Extracted cover to:" << coverPath;
-//         return true;
-//     }
-
-//     return false;
-// }
-
-// bool Song::extractEmbeddedLyrics()
-// {
-//     TagLib::MPEG::File file(m_filePath.toStdWString().c_str());
-//     if (!file.isValid() || !file.ID3v2Tag()) {
-//         return false;
-//     }
-
-//     const auto frameList = file.ID3v2Tag()->frameListMap()["USLT"];
-//     if (frameList.isEmpty()) {
-//         return false;
-//     }
-
-//     auto lyricsFrame = static_cast<TagLib::ID3v2::UnsynchronizedLyricsFrame *>(frameList.front());
-//     if (!lyricsFrame) {
-//         return false;
-//     }
-
-//     // 创建缓存路径
-//     QString cacheDir = ensureCachePath("lyrics");
-//     QString lyricsFileName = QString::number(qHash(m_artist + m_album + m_title)) + ".txt";
-//     QString lyricsFilePath = cacheDir + "/" + lyricsFileName;
-
-//     // 将歌词写入文件
-//     QFile lyricsFile(lyricsFilePath);
-//     if (lyricsFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-//         QTextStream out(&lyricsFile);
-//         out.setCodec("UTF-8");
-//         out << QString::fromStdString(lyricsFrame->text().to8Bit(true));
-//         lyricsFile.close();
-//         setLyricsPath(lyricsFilePath);
-//         qDebug() << "Extracted lyrics to:" << lyricsFilePath;
-//         return true;
-//     }
-
-//     return false;
-// }
 
 // --- Getters ---
 int Song::id() const

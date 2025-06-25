@@ -359,6 +359,7 @@ Item {
                                        Layout.fillWidth: true
                                    }
                                }
+
                            }
                            // 双击添加歌曲
                            TapHandler {
@@ -457,6 +458,17 @@ Item {
                                 color: "#666"
                                 elide: Text.ElideRight
                             }
+                        }
+
+                        //歌曲时间
+                        Text {
+                            text: modelData.durationString /*|| "00:00"*/
+                            // text: {
+                                   // console.log("!!!!!!!!!!song.durationString():",modelData.durationString)
+                            // }
+
+                            font.pixelSize: 14
+                            color: "#666"
                         }
                     }
 

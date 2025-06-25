@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS Playlists(
     name TEXT NOT NULL,
     description TEXT,
     coverUrl TEXT,
-    creationDate DATETIME DEFAULT CURRENT_TIMESTAMP--DEFAULT CURRENT_TIMESTAMP 将在插入时自动设置为当前时间
+    creationDate DATETIME DEFAULT CURRENT_TIMESTAMP,--DEFAULT CURRENT_TIMESTAMP 将在插入时自动设置为当前时间
+    ifLocal BOOLEAN DEFAULT FALSE -- 标识是否为本地创建的歌单
     -- lastModified DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

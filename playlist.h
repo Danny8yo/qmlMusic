@@ -50,6 +50,9 @@ public:
     Q_INVOKABLE QList<Song*> getAllSongs() const;
     Q_INVOKABLE void updateCoverUrl();//设置第一首歌曲为歌单封面
 
+    //输出相对路径到数据库
+    QString relativeCoverPath();
+
 signals:
     void idChanged();
     void localChanged();

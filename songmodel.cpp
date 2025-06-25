@@ -41,13 +41,10 @@ QVariant SongModel::data(const QModelIndex &index, int role) const
     case FilePathRole:
         return song->filePath();
     case CoverArtRole:
-        // 后期处理歌曲有封面URL后在实现
-        //  return song->coverArtPath().isEmpty() ? "qrc:/resources/images/default_cover.png" : song->coverArtPath();
         return song->coverArtUrl();
     case LyricsRole:
         return song->lyricsPath();
     case FormattedDurationRole:
-        // return song->formattedDuration();
         return song->durationString();
     case SongObjectRole:
         return QVariant::fromValue(song);

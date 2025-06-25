@@ -11,7 +11,8 @@ extern QString appDir;
 BackendManager *BackendManager::s_instance = nullptr;
 
 BackendManager::BackendManager(QObject *parent)
-    : QObject(parent), m_dbManager(nullptr), m_scanner(nullptr), m_playerController(nullptr), m_songModel(nullptr), m_playlistModel(nullptr)
+    : QObject(parent), m_dbManager(nullptr), m_scanner(nullptr), m_playerController(nullptr)
+    , m_songModel(nullptr), m_playlistModel(nullptr),m_lyricsExtractor(nullptr)
 {
 }
 
@@ -56,7 +57,10 @@ bool BackendManager::initialize()
     {
         qDebug() << "歌曲为空";
     }
-    qDebug() << song->title() << song->artist();
+    else
+    {
+        qDebug() << song->title() << song->artist();
+    }
 
     // 初始化音乐扫描器
     m_scanner = new MusicScanner(this);
@@ -64,10 +68,14 @@ bool BackendManager::initialize()
     // 初始化播放控制器
     m_playerController = new PlayerController(this);
 
+    // 初始化歌词提取器
+    m_lyricsExtractor = new LyricsExtractor(this);
+
     // 初始化数据模型
     m_songModel = new SongModel(this);
     m_playlistModel = new PlaylistModel(this);
     m_locallistModel = new PlaylistModel(this);
+
 
     // 连接信号
     connectSignals();

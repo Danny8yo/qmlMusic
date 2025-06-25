@@ -29,19 +29,6 @@ Window {
         }
     }
 
-    // Component {
-    //     id: _playlistComponent
-    //     // SongView{
-    //     //     anchors.fill: parent
-    //     // }
-    //     PlaylistView{
-    //         anchors.fill:parent
-    //     }
-
-    //     //绑定PlaylistView.qml中的列表
-
-    // }
-
     property alias stack: _stack
 
     //导航栏StackView  和  下侧控制栏

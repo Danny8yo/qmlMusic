@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Controls
-//import QtQuick.Controls.Material
 import QtQuick.Layouts
 import QtMultimedia
+import qmltest
 
 Item {
     id: lyricsPage
@@ -12,6 +12,31 @@ Item {
     height: parent.height
     //visible: true 与窗口控制方法会发生QML QQuickWindowQmlImpl*: Conflicting properties 'visible' and 'visibility'
     signal requestClose()
+
+    // 歌词相关属性
+    property var currentLyrics: []
+    property var parsedLyrics: []
+    property int currentLyricIndex: -1
+    property bool lyricsLoaded: false
+
+    // 使用 BackendManager 的歌词提取器
+    property var lyricsExtractor: BackendManager.lyricsExtractor
+
+    // 监听播放进度，实现歌词滚动
+    Connections {
+        target: BackendManager.playerController
+        function onPositionChanged() {
+            updateCurrentLyric()
+        }
+        function onCurrentSongChanged() {
+            loadCurrentSongLyrics()
+        }
+    }
+
+    // 页面加载时自动加载歌词
+    Component.onCompleted: {
+        loadCurrentSongLyrics()
+    }
 
     ColumnLayout{
         anchors.fill: parent  // 关键点1：让布局填满整个窗口
@@ -29,8 +54,7 @@ Item {
                 onClicked: {
                     // 从堆栈弹出当前页面
                     stack.pop()
-                    // 如果需要传递数据回前一页
-                   // StackView.view.pop({someData: value})
+
                 }
             }
         }
@@ -58,7 +82,11 @@ Item {
                         height: width // 强制保持正方形
                         anchors.centerIn: parent
 
-                        source: "file:///root/MusicTest/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
+                        // source: "file:///root/MusicTest/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
+                        source: {
+                            return BackendManager.playerController.currentSong.coverArtUrl
+                        }
+
                         fillMode: Image.PreserveAspectFit  // 保持比例缩放
                     }
                 }
@@ -81,7 +109,7 @@ Item {
                             Layout.preferredHeight: 30
                             horizontalAlignment: Text.AlignHCenter //居中
                             verticalAlignment: Text.AlignVCenter
-                            text: "歌曲名称"
+                            text: BackendManager.playerController.currentSong.title || "未知歌曲"
                             color:"gray"
                             font.pixelSize:25
                         }
@@ -93,7 +121,7 @@ Item {
                             Layout.preferredHeight: 15
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            text: "歌手名"
+                            text: BackendManager.playerController.currentSong.artist || "未知歌手"
                             color:"gray"
                             font.pixelSize:10
                         }
@@ -105,12 +133,13 @@ Item {
                             Layout.preferredHeight: 10
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
-                            text: "专辑: 专辑名"
+                            text: "专辑: " + (BackendManager.playerController.currentSong.album || "未知专辑")
                             color:"gray"
                             font.pixelSize:10
                         }
+                        //ListView歌词
                         ListView {
-                            id: lyricView
+                            id: _lyricView
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             clip: true
@@ -119,75 +148,131 @@ Item {
                             // 关键：使当前行始终居中
                             preferredHighlightBegin: height / 2 - 30  // 30 是单行近似高度
                             preferredHighlightEnd: height / 2 + 30  // 必须成对出现
-                            //preferredHighlightRange: height / 2
-                            //highlightRangeMode: ListView.StrictlyEnforceRange
                             highlightRangeMode: ListView.ApplyRange  // 比StrictlyEnforceRange更灵活
 
-                            // 高亮当前行样式
-                            // highlight: Rectangle {
-                            //     color: "#bdd3d1"
-                            //     width: lyricView.width
-                            //     height: 30
-                            //     radius: 4  // 可选圆角
-                            //     anchors.horizontalCenter: parent.horizontalCenter
-                            // }
-                            // highlightMoveDuration: 200  // 200毫秒动画
+                            model: ListModel {
+                                id: lyricModel
+                                // 动态加载歌词数据
+                            }
 
-                            model: ListModel { //将歌词一行一行添加进模型就好
-                                       id: lyricModel
-                                       // 测试数据（实际使用时通过loadLyrics()动态加载）
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-                                       ListElement { lineText: "这是第一行歌词"; time: 0 }
-                                       ListElement { lineText: "这是第二行歌词"; time: 2000 }
-                                       ListElement { lineText: "这是第三行歌词"; time: 4000 }
-
-                                   }
-                             // 动态加载歌词
+                            // 动态加载歌词
                             delegate: Text {
-                                text: lineText  // 假设每行数据有 lineText 属性
-                                color: index === lyricView.currentIndex ? "#95cac5" : "white"
-                                // font {
-                                //     pixelSize: index === lyricView.currentIndex ? 22 : 16
-                                //     bold: index === lyricView.currentIndex// 加粗
-                                //     }
-                                font.pixelSize: index === lyricView.currentIndex ? 22 : 16  //
+                                text: lineText  // 只显示歌词文本，不显示时间戳
+                                color: index === currentLyricIndex ? "#95cac5" : "white"
+                                font.pixelSize: index === currentLyricIndex ? 22 : 16
+                                font.bold: index === currentLyricIndex
                                 horizontalAlignment: Text.AlignHCenter
-                                width: parent.width
+                                // width: parent.width
+                                wrapMode: Text.WordWrap
 
                                 TapHandler{
                                     onTapped:{
-                                        lyricView.currentIndex = index
-                                        lyricView.positionViewAtIndex(index, ListView.Center)  // 强制居中
-
-                                        console.log("点击行:", index, "当前高亮行:", lyricView.currentIndex)// 调试输出
-
+                                        if (parsedLyrics.length > 0 && index < parsedLyrics.length) {
+                                            _lyricView.currentIndex = index
+                                            _lyricView.positionViewAtIndex(index, ListView.Center)
+                                            // 跳转到对应时间
+                                            BackendManager.playerController.setPosition(parsedLyrics[index].time)
+                                        }
                                     }
                                 }
                             }
 
-                            // 控制当前行（外部通过修改 currentIndex 滚动）
-                            //property int currentIndex: 0
-                            //Component.onCompleted: currentIndex = 0
-                            Component.onCompleted: positionViewAtIndex(0, ListView.Beginning)
+                            // 无歌词时的占位文本
+                            Text {
+                                anchors.centerIn: parent
+                                text: "当前歌曲暂无歌词"
+                                color: "#888888"
+                                font.pixelSize: 18
+                                visible: lyricModel.count === 0 && lyricsLoaded
+                            }
 
+                            // 歌词加载提示
+                            Text {
+                                anchors.centerIn: parent
+                                text: "正在加载歌词..."
+                                color: "#888888"
+                                font.pixelSize: 16
+                                visible: !lyricsLoaded
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    // 歌词处理函数
+    function loadCurrentSongLyrics() {
+        console.log("开始加载当前歌曲歌词")
+        lyricsLoaded = false
+        currentLyricIndex = -1
+        lyricModel.clear()
+        
+        var currentSong = BackendManager.playerController.currentSong
+        if (!currentSong || !currentSong.filePath) {
+            console.log("没有当前歌曲")
+            lyricsLoaded = true
+            return
+        }
+
+        console.log("当前歌曲路径:", currentSong.filePath)
+        
+        // 使用 BackendManager 的 lyricsExtractor
+        currentLyrics = BackendManager.lyricsExtractor.extractLyricsFromFile(currentSong.filePath)
+        
+        if (currentLyrics.length > 0) {
+            console.log("成功提取歌词，行数:", currentLyrics.length)
+            // 解析 LRC 格式歌词
+            parsedLyrics = BackendManager.lyricsExtractor.parseLrcLyrics(currentLyrics)
+            
+            //lyricsExtractor.parselrcLyrics函数对于有些歌词无法成功解析
+            if (parsedLyrics.length > 0) {
+                console.log("成功解析带时间戳的歌词，行数:", parsedLyrics.length)
+                // 加载解析后的歌词到模型
+                for (var i = 0; i < parsedLyrics.length; i++) {
+                    lyricModel.append({
+                        "lineText": parsedLyrics[i].text,
+                        "time": parsedLyrics[i].time
+                    })
+                }
+            } else {
+                // 如果没有时间戳，加载原始歌词
+                console.log("加载原始歌词")
+                for (var j = 0; j < currentLyrics.length; j++) {
+                    lyricModel.append({
+                        "lineText": currentLyrics[j],
+                        "time": j * 3000  // 每行默认3秒间隔
+                    })
+                }
+            }
+        } else {
+            console.log("未找到歌词")
+        }
+        
+        lyricsLoaded = true
+        _lyricView.currentIndex = 0
+    }
+
+    function updateCurrentLyric() {
+        if (parsedLyrics.length === 0) return
+        
+        var currentPosition = BackendManager.playerController.position
+        var newIndex = -1
+        
+        // 找到当前播放时间对应的歌词行
+        for (var i = 0; i < parsedLyrics.length; i++) {
+            if (currentPosition >= parsedLyrics[i].time) {
+                newIndex = i
+            } else {
+                break
+            }
+        }
+        
+        // 更新当前歌词索引和滚动位置
+        if (newIndex !== currentLyricIndex && newIndex >= 0) {
+            currentLyricIndex = newIndex
+            _lyricView.currentIndex = newIndex
+            _lyricView.positionViewAtIndex(newIndex, ListView.Center)
         }
     }
 }

@@ -50,6 +50,7 @@ qt_add_qml_module(appqmltest
     SOURCES playlistmodel.h playlistmodel.cpp
     SOURCES PlayerController.h PlayerController.cpp
     SOURCES DatabaseManager.cpp DatabaseManager.h
+    SOURCES LyricsExtractor.h LyricsExtractor.cpp
     SOURCES resource.qrc
 )
 
