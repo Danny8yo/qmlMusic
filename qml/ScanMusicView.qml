@@ -214,13 +214,15 @@ Rectangle {
         scanStatusText.text = "正在扫描音乐文件..."
         
         // 调用后端扫描功能
-        if (BackendManager.musicScanner) {
-            BackendManager.musicScanner.scanFolder(
-                scanPath, 
-                includeSubfoldersCheck.checked,
-                replaceExistingCheck.checked
-            )
-        }
+        // if (BackendManager.musicScanner) {
+        //     BackendManager.musicScanner.scanFolder(
+        //         scanPath,
+        //         includeSubfoldersCheck.checked,
+        //         replaceExistingCheck.checked
+        //     )
+        // }
+        console.log(scanPath)
+        BackendManager.scanMusicLibrary(scanPath)
         
         // 模拟扫描过程（实际应该通过信号连接）
         scanTimer.start()

@@ -59,7 +59,7 @@ bool BackendManager::initialize()
     qDebug() << song->title() << song->artist();
 
     // 初始化音乐扫描器
-    // m_scanner = new MusicScanner(this);
+    m_scanner = new MusicScanner(this);
 
     // 初始化播放控制器
     m_playerController = new PlayerController(this);
@@ -67,6 +67,7 @@ bool BackendManager::initialize()
     // 初始化数据模型
     m_songModel = new SongModel(this);
     m_playlistModel = new PlaylistModel(this);
+    m_locallistModel = new PlaylistModel(this);
 
     // 连接信号
     connectSignals();
@@ -99,6 +100,7 @@ void BackendManager::playSongById(int songId) {}
 void BackendManager::playPlaylist(int playlistId)
 {
     Playlist *playlist = getPlaylistById(playlistId);
+    Playlist *localplaylist = getLocalPlaylistById(playlistId);
     if (playlist && m_playerController)
     {
         QList<Song *> songs = playlist->getAllSongs();
@@ -111,11 +113,29 @@ void BackendManager::playPlaylist(int playlistId)
         {
             qDebug() << "歌单为空:" << playlist->name();
         }
-    }
-    else
-    {
+    } else if (localplaylist && m_playerController) {
+        QList<Song *> songs = localplaylist->getAllSongs();
+        if (!songs.isEmpty()) {
+            m_playerController->loadQueue(songs);
+            qDebug() << "开始播放歌单:" << playlist->name();
+        } else {
+            qDebug() << "歌单为空:" << playlist->name();
+        }
+    } else {
         qDebug() << "找不到指定的歌单，ID:" << playlistId;
     }
+}
+
+Song *BackendManager::getSongById(int songId)
+{
+    if (!m_songModel) { return nullptr; }
+
+    // 遍历歌曲模型查找指定ID的歌曲
+    for (int i = 0; i < m_songModel->rowCount(); ++i) {
+        Song *song = m_songModel->getSong(i);
+        if (song && song->id() == songId) { return song; }
+    }
+    return nullptr;
 }
 
 Playlist *BackendManager::getPlaylistById(int playlistId)
@@ -147,6 +167,31 @@ Playlist *BackendManager::getPlaylistByIndex(int index)
     return m_playlistModel->getPlaylist(index);
 }
 
+// get本地
+Playlist *BackendManager::getLocalPlaylistById(int playlistId)
+{
+    if (!m_playlistModel) { return nullptr; }
+
+    // 遍历播放列表模型查找指定ID的播放列表
+    for (int i = 0; i < m_locallistModel->rowCount(); ++i) {
+        Playlist *playlist = m_locallistModel->getPlaylist(i);
+        if (playlist && playlist->id() == playlistId) { return playlist; }
+    }
+    return nullptr;
+}
+
+Playlist *BackendManager::getLocalPlaylistByIndex(int index)
+{
+    if (!m_locallistModel || index < 0 || index >= m_locallistModel->rowCount()) { return nullptr; }
+
+    return m_locallistModel->getPlaylist(index);
+}
+
+void BackendManager::addSongToPlaylist(Song *song, Playlist *playlist)
+{
+    playlist->addSong(song);                                    // 列表操作
+    m_dbManager->addSongToPlaylist(song->id(), playlist->id()); // 同时更新数据库
+}
 // Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
 
 void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
@@ -165,12 +210,29 @@ void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
 
 // }
 
-void BackendManager::loadAllPlaylists()
+void BackendManager::loadAllPlaylists() //加载已有歌单
 {
-    if (!m_dbManager || !m_songModel)
-    {
-        return;
+    if (!m_dbManager || !m_playlistModel || !m_locallistModel) { return; }
+
+    QList<Playlist *> allplaylists = m_dbManager->getAllPlaylists();
+    QList<Playlist *> playlists;      // 非新建
+    QList<Playlist *> localplaylists; // 新建
+    for (auto &list : allplaylists) {
+        if (!list->local()) {
+            qDebug() << "false";
+            playlists.append(list);
+        } else {
+            qDebug() << "true";
+            localplaylists.append(list);
+        }
     }
+    m_playlistModel->loadPlaylists(playlists);
+    m_locallistModel->loadPlaylists(localplaylists);
+}
+
+void BackendManager::loadSongLibrary() //加载所有歌曲
+{
+    if (!m_dbManager || !m_songModel) { return; }
 
     QList<Song *> songs = m_dbManager->getAllSongs();
     m_songModel->loadSongs(songs);
@@ -179,17 +241,23 @@ void BackendManager::loadAllPlaylists()
     // qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
 }
 
-void BackendManager::loadSongLibrary()
+Playlist *BackendManager::createLocalPlaylist(const QString &listname) //创建新歌单
 {
-    if (!m_dbManager || !m_playlistModel)
-    {
-        return;
-    }
-
-    QList<Playlist *> playlists = m_dbManager->getAllPlaylists();
-    m_playlistModel->loadPlaylists(playlists);
+    qDebug() << "23333333333333333333333" << listname;
+    QDateTime dt1 = QDateTime::currentDateTime();
+    Playlist *playlist = new Playlist(89, listname, "xinjian", dt1, this);
+    //playlist->setName(listname);
+    playlist->setLocal(true);           // 新建歌单设置标识
+    m_dbManager->addPlaylist(playlist); // 更新数据库的歌单信息(并且数据库赋予新建歌单真正的id)
+    m_locallistModel->addPlaylist(playlist); // 加入本地（我的）歌单model,新建歌单
+    return playlist;
 }
 
+// void BackendManager::removeLocalPlaylist(Playlist *playlist)
+// {
+//     for (auto &list : m_locallistModel->)
+//     //m_locallistModel->removePlaylist()
+// }
 void BackendManager::connectSignals()
 {
     // 连接扫描器信号

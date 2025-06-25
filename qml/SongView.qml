@@ -122,8 +122,8 @@ Rectangle{
                 if (typeof BackendManager !== 'undefined' && BackendManager.songModel) {
                     console.log("延迟检查 - 模型数据量:", BackendManager.songModel.count)
                     // 强制重新绑定模型
-                    songView.model = null
-                    songView.model = BackendManager.songModel
+                    _songView.model = null
+                    _songView.model = BackendManager.songModel
                 } else {
                     console.log("延迟检查 - songModel 仍然为空")
                 }

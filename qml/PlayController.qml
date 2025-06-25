@@ -71,13 +71,17 @@ Rectangle {
             Layout.leftMargin: 10 // 确保这里有内边距，否则内容会贴边
             Layout.rightMargin: 10
 
-            spacing: 20 // 设置固定间距
+            spacing: 0 // 设置固定间距
 
             //左部歌曲信息
             RowLayout {
                 id : leftSection
-                Layout.fillHeight: true
-                spacing: 15
+                // Layout.fillHeight: true
+                // Layout.fillWidth: true
+                // Layout.alignment: Qt.AlignLeft //左
+                Layout.preferredWidth: parent.width * 0.3
+                Layout.alignment: Qt.AlignLeft
+                spacing: 10
 
                 // 圆角图片
                 Item {
@@ -86,6 +90,7 @@ Rectangle {
                     Layout.preferredHeight: 60
                     // radius: 8
                     Layout.alignment: Qt.AlignVCenter
+                    //Rectangle { color: "red"; opacity: 0.2; anchors.fill: parent }
 
                     Image {
                         anchors.fill: parent
@@ -139,10 +144,13 @@ Rectangle {
 
                 }
 
+
                 // 歌曲信息文本
-                Column {
-                    Layout.alignment: Qt.AlignVCenter
-                    Layout.fillWidth: true
+                ColumnLayout {
+                    //Layout.alignment: Qt.AlignLeft
+                    //Layout.fillWidth: true
+                    //Rectangle { color: "red"; opacity: 0.2; anchors.fill: parent }
+                    Layout.preferredWidth: parent.width - 70 //// 不加的话文字和图片间距会过大
 
                     Text {
                         //text: "城里的月光"
@@ -159,14 +167,21 @@ Rectangle {
                     }
                 }
 
+
+            }
+
+            Item{ // 左部填充（不加的话播放控制按钮不能正确居中）
+                id: _left
+                Layout.fillWidth: true
             }
 
 
             //中间的播放控制按钮
-            RowLayout {
-                //anchors.centerIn: parent 将按钮组居中
-                anchors.centerIn: parent
-                // Layout.alignment:
+            RowLayout {                
+                //()1  anchors.centerIn: parent//将按钮组居中
+                ///Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter  // 使用Layout属性
+
                 spacing: 20 // 设置按钮间固定间距
 
                 ToolButton {
@@ -220,9 +235,20 @@ Rectangle {
             }
 
 
+            Item { // 右部填充（不加的话功能按钮不能正确靠右）
+                id: _right
+                Layout.fillWidth: true
+
+            }
+
             //右侧功能按钮(播放列表,音量调节,播放模式,歌词显示等)
             RowLayout {
                 spacing: 1
+                Layout.preferredWidth: parent.width * 0.3
+                Layout.alignment: Qt.AlignRight
+                //anchors.right: parent.right
+                //Layout.fillWidth: true
+                //Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 // Layout.preferredWidth: parent.width/3
 
                 ToolButton {

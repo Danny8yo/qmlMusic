@@ -9,11 +9,14 @@ class Playlist : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int id READ id WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(bool local READ local WRITE setLocal NOTIFY localChanged FINAL)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
     Q_PROPERTY(QDateTime creationDate READ creationDate WRITE setCreationDate NOTIFY creationDateChanged)
     Q_PROPERTY(QUrl coverUrl READ coverUrl NOTIFY coverUrlChanged)
     Q_PROPERTY(int songCount READ songCount NOTIFY songCountChanged)
+
+    //QML_ELEMENT// playlsit类需要在外部创建(歌单可能不存在，但是歌曲一定是都有的)
 
 public:
     explicit Playlist(QObject* parent = nullptr);
@@ -23,6 +26,7 @@ public:
 
     // Getters
     int id() const { return m_id; }
+    bool local() const { return m_local; }
     QString name() const { return m_name; }
     QString description() const { return m_description; }
     QDateTime creationDate() const { return m_creationDate; }
@@ -31,6 +35,7 @@ public:
 
     // Setters
     void setId(int id);
+    void setLocal(bool local);
     void setName(const QString& name);
     void setDescription(const QString& description);
     void setCreationDate(const QDateTime& creationDate);
@@ -47,6 +52,7 @@ public:
 
 signals:
     void idChanged();
+    void localChanged();
     void nameChanged();
     void descriptionChanged();
     void creationDateChanged();
@@ -56,6 +62,7 @@ signals:
 
 private:
     int m_id;
+    bool m_local{false}; // 是否为本地（用户新建歌单的标识，默认为false）
     QString m_name;
     QString m_description;
     QDateTime m_creationDate;

@@ -9,7 +9,7 @@ extern QString appDir;
 
 DatabaseManager::DatabaseManager(QSqlDatabase database, QObject* parent) : QObject(parent), m_database(database)
 {
-    if (!m_database.isOpen()) { qWarning() << "Warning: Database connection is not open"; }
+    if (!m_database.isOpen()) { qDebug() << "Warning: Database connection is not open"; }
 }
 
 // DatabaseManager::~DatabaseManager()
@@ -224,13 +224,15 @@ bool DatabaseManager::addPlaylist(Playlist* playlist)
     if (!playlist) return false;
 
     QSqlQuery query(m_database);
-    query.prepare(R"(INSERT INTO Playlists (name, description, coverUrl, creationDate) 
-                     VALUES (?, ?, ?, ?))");
+    query.prepare(R"(INSERT INTO Playlists (name, description, coverUrl, creationDate, ifLocal) 
+                     VALUES (?, ?, ?, ?, ?))");
 
     query.addBindValue(playlist->name());
     query.addBindValue(playlist->description());
-    query.addBindValue(playlist->coverUrl());
+    query.addBindValue(playlist->coverUrl().toString());
+    qDebug() << "playlist cover： " << playlist->coverUrl().toString();
     query.addBindValue(playlist->creationDate());
+    query.addBindValue(playlist->local());
     //query.addBindValue(playlist->size());
 
     if (query.exec()) {
@@ -270,11 +272,12 @@ bool DatabaseManager::updatePlaylist(Playlist* playlist)
     if (!playlist || playlist->id() <= 0) return false;
 
     QSqlQuery query(m_database);
-    query.prepare("UPDATE Playlists SET name=?, description=?, coverUrl=? WHERE PlaylistId=?");
+    query.prepare("UPDATE Playlists SET name=?, description=?, coverUrl=?, ifLocal=? WHERE PlaylistId=?");
 
     query.addBindValue(playlist->name());
     query.addBindValue(playlist->description());
     query.addBindValue(playlist->coverUrl());
+    query.addBindValue(playlist->local());
     query.addBindValue(playlist->id());
 
     return query.exec();
@@ -342,7 +345,7 @@ Playlist* DatabaseManager::getPlaylist(int playlistId)
         playlist->setDescription(query.value("description").toString());
         playlist->setCoverUrl(QUrl("file://" + appDir + query.value("coverUrl").toString()));
         playlist->setCreationDate(query.value("creationDate").toDateTime());
-
+        playlist->setLocal(query.value("ifLocal").toBool());
         QList<int> songIds = searchSongInPlaylist(playlistId);
         QList<Song*> songs;
         // 同时将该歌单的歌曲也初始化

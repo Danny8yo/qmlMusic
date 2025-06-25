@@ -93,6 +93,13 @@ Item {
             onNavigationRequested: function(page) {
                 _root.navigateToPage(page)
             }
+
+            // 连接新增的我的歌单信号
+            onMylistRequested: function(playlistId)  {
+                console.log("接收到我的歌单请求:", playlistId)
+                _root.navigateToPage("playlist", true, playlistId)
+            }
+
         }
         
         //列排序导航栏和主界面

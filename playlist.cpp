@@ -8,7 +8,7 @@ Playlist::Playlist(QObject* parent)
 {
 }
 
-Playlist::Playlist(const QString& name, QObject* parent)
+Playlist::Playlist(const QString &name, QObject *parent)
     : QObject(parent)
     , m_id(-1)
     , m_name(name)
@@ -17,12 +17,13 @@ Playlist::Playlist(const QString& name, QObject* parent)
 }
 
 //用于创建自定义歌单
-Playlist::Playlist(const int &id,const QString &name, const QString &description,const QDateTime &date,QObject *parent)
+Playlist::Playlist(const int &id, const QString &name, const QString &description, const QDateTime &date, QObject *parent)
     : QObject(parent)
     , m_id(id)
     , m_name(name)
     , m_description(description)
     , m_creationDate(date)
+    , m_local(true)
 {}
 
 //setters
@@ -34,6 +35,13 @@ void Playlist::setId(int id)
     }
 }
 
+void Playlist::setLocal(bool local)
+{
+    if (m_local != local) {
+        m_local = local;
+        emit localChanged();
+    }
+}
 void Playlist::setName(const QString& name)
 {
     if (m_name != name) {
@@ -73,7 +81,7 @@ void Playlist::setSongs(const QList<Song *> &songs)
         emit songsChanged();
     }
 }
-
+//
 void Playlist::addSong(Song *song)
 {
     // 检查这是否是添加到列表的第一首歌
@@ -82,6 +90,7 @@ void Playlist::addSong(Song *song)
 
     if (song && !m_songs.contains(song)) {
         m_songs.append(song);
+
         qDebug() << "添加歌曲" << song->title();
         emit songsChanged();
         emit songCountChanged();
@@ -91,7 +100,7 @@ void Playlist::addSong(Song *song)
     if (isFirstSong && !song->coverArtUrl().isEmpty()) {
         // 更新内部的封面路径变量
         m_coverUrl = m_songs.at(0)->coverArtUrl();
-        qDebug() << "已将歌单封面更换为第一首歌曲";
+        qDebug() << "已将歌单封面更换为第一首歌曲" << m_coverUrl;
 
         // 关键：发射NOTIFY信号！
         // QML中所有绑定到 "coverPath" 属性的UI元素都会自动收到通知并刷新
