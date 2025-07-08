@@ -47,6 +47,7 @@ qt_add_qml_module(appqmltest
     SOURCES playlist.cpp playlist.h
     SOURCES backendmanager.h backendmanager.cpp
     SOURCES songmodel.h songmodel.cpp
+    SOURCES localsongmodel.h localsongmodel.cpp
     SOURCES playlistmodel.h playlistmodel.cpp
     SOURCES PlayerController.h PlayerController.cpp
     SOURCES DatabaseManager.cpp DatabaseManager.h

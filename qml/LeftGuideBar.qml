@@ -88,7 +88,7 @@ Rectangle {
 
                         TapHandler {
                             onTapped: {
-                                console.log("Clicked:", model.title);
+                                console.log("Clicked:", model.title,model.page);
                                 //将点击的页面传递出去
                                 sideBar.navigationRequested(model.page)
                             }

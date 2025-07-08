@@ -7,6 +7,7 @@
 #include "MusicScanner.h"
 #include "songmodel.h"
 #include "playlistmodel.h"
+#include "localsongmodel.h"
 #include "PlayerController.h"
 #include "DatabaseManager.h"
 #include "LyricsExtractor.h"
@@ -18,12 +19,14 @@ class BackendManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(SongModel *songModel READ songModel CONSTANT)
+    Q_PROPERTY(LocalSongModel *localSongModel READ localSongModel CONSTANT)
     Q_PROPERTY(PlaylistModel *playlistModel READ playlistModel CONSTANT)
     Q_PROPERTY(PlaylistModel *locallistModel READ locallistModel CONSTANT)
     Q_PROPERTY(PlayerController *playerController READ playerController CONSTANT)
     Q_PROPERTY(LyricsExtractor *lyricsExtractor READ lyricsExtractor CONSTANT)
     Q_PROPERTY(QString appDirPath READ appDirPath CONSTANT)
     QML_ELEMENT
+    // QML_SINGLETON  // 使用手动注册以确保稳定性
 public:
     explicit BackendManager(QObject *parent = nullptr);
     // 单例模式:某个对象只需要一个实例
@@ -35,13 +38,14 @@ public:
     /*QQmlEngine* engine: 一个指向 QQmlEngine 实例的指针。QML 引擎是加载和解释
      QML文档的核心组件。这个参数允许 qmlInstance 函数在单例创建或检索过程中，根据需要与 QML 引擎交互或从中获取信息。*/
     /*QJSEngine* scriptEngine: 一个指向 QJSEngine 实例的指针*/
-    static QObject *qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static BackendManager *create(QQmlEngine *engine, QJSEngine *scriptEngine);
 
     // 初始化
     Q_INVOKABLE bool initialize();
 
     // 公开的模型和控制器
     SongModel *songModel() const { return m_songModel; }
+    LocalSongModel *localSongModel() const { return m_localSongModel; }
     PlaylistModel *playlistModel() const { return m_playlistModel; }
     PlaylistModel *locallistModel() const { return m_locallistModel; }
     PlayerController *playerController() const { return m_playerController; }
@@ -78,9 +82,9 @@ public:
 
     // 创建Playlist，Song对象(从数据库导入的只是模拟服务器)
     Q_INVOKABLE Playlist *createLocalPlaylist(const QString &listname); // 创建“我的歌单”时使用
-    //Q_INVOKABLE Song *createSong();
-    // 删除歌单（本地）
-    //Q_INVOKABLE void removeLocalPlaylist(Playlist *playlist);
+    // Q_INVOKABLE Song *createSong();
+    //  删除歌单（本地）
+    // Q_INVOKABLE void removeLocalPlaylist(Playlist *playlist);
 
     // DatabaseManager测试
 
@@ -102,7 +106,8 @@ private:
     MusicScanner *m_scanner;
     // QML数据模型
     SongModel *m_songModel;
-    PlaylistModel *m_playlistModel;  //发现（网页）歌单model,非用户创建的歌单
+    LocalSongModel *m_localSongModel;
+    PlaylistModel *m_playlistModel;  // 发现（网页）歌单model,非用户创建的歌单
     PlaylistModel *m_locallistModel; // 本地歌单model
     PlayerController *m_playerController;
     LyricsExtractor *m_lyricsExtractor;

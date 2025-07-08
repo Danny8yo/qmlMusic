@@ -54,7 +54,8 @@ Item {
                 onClicked: {
                     // 从堆栈弹出当前页面
                     stack.pop()
-
+                    // 如果需要传递数据回前一页
+                   // StackView.view.pop({someData: value})
                 }
             }
         }
@@ -137,7 +138,6 @@ Item {
                             color:"gray"
                             font.pixelSize:10
                         }
-                        //ListView歌词
                         ListView {
                             id: _lyricView
                             Layout.fillWidth: true
@@ -162,7 +162,7 @@ Item {
                                 font.pixelSize: index === currentLyricIndex ? 22 : 16
                                 font.bold: index === currentLyricIndex
                                 horizontalAlignment: Text.AlignHCenter
-                                // width: parent.width
+                                width: parent.width
                                 wrapMode: Text.WordWrap
 
                                 TapHandler{
@@ -225,7 +225,6 @@ Item {
             // 解析 LRC 格式歌词
             parsedLyrics = BackendManager.lyricsExtractor.parseLrcLyrics(currentLyrics)
             
-            //lyricsExtractor.parselrcLyrics函数对于有些歌词无法成功解析
             if (parsedLyrics.length > 0) {
                 console.log("成功解析带时间戳的歌词，行数:", parsedLyrics.length)
                 // 加载解析后的歌词到模型

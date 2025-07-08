@@ -15,6 +15,12 @@ Item {
     
     // 导航函数
     function navigateToPage(pageName, addToHistory = true, playlistId = -1) {
+        // 检查是否已经在目标页面且播放列表ID相同（如果适用）
+        if (currentPage === pageName && (pageName !== "playlist" || selectedPlaylistId === playlistId)) {
+            console.log("已经在目标页面:", pageName, "播放列表ID:", playlistId)
+            return; // 如果已经在目标页面，直接返回，不重复加载
+        }
+        
         // 如果是播放列表相关的导航，使用专门的历史记录
         if (pageName === "playlist" || (currentPage === "playlist" && playlistNavigationHistory.length > 0)) {
             if (addToHistory && pageName === "playlist") {
@@ -138,6 +144,7 @@ Item {
                 // 页面加载函数
                 function loadPage(pageName) {
                     var componentSource = ""
+                    console.log("接收到page", pageName)
                     switch(pageName) {
                         case "discover":
                             componentSource = "PlaylistGridView.qml"
@@ -146,7 +153,7 @@ Item {
                             componentSource = "MyFavoritesView.qml"
                             break
                         case "local":
-                            componentSource = "SongView.qml"
+                            componentSource = "Local.qml"
                             break
                         case "scan":
                             componentSource = "ScanMusicView.qml"

@@ -99,23 +99,6 @@ void PlayerController::setPlaybackMode(PlaybackMode mode)
     }
 }
 
-// void PlayerController::playFile(const QString& filePath)
-// {
-//     QFileInfo fileInfo(filePath);
-//     if (!fileInfo.exists()) {
-//         qDebug() << "File does not exist:" << filePath;
-//         return;
-//     }
-
-//     // 创建临时Song对象
-//     Song* tempSong = new Song(filePath, this);
-//     //tempSong->loadMetadataFromFile();(创建时被自动调用)
-
-//     clearQueue();
-//     addToQueue(tempSong);
-//     playQueueIndex(0);
-// }
-
 void PlayerController::playSong(Song* song)
 {
     if (!song) return;

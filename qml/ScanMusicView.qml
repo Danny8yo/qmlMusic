@@ -65,6 +65,7 @@ Rectangle {
                         id: pathField
                         Layout.fillWidth: true
                         text: scanPath
+                        color: "black"
                         placeholderText: "请选择要扫描的音乐文件夹..."
                         readOnly: true
                         background: Rectangle {
@@ -105,21 +106,6 @@ Rectangle {
                         leftPadding: parent.indicator.width + parent.spacing
                     }
                     checked: true
-                }
-                
-                CheckBox {
-                    id: replaceExistingCheck
-                    text: "替换已存在的音乐文件"
-                    
-                    contentItem: Text {
-                        text: parent.text
-                        color: "black"
-                        font: parent.font
-                        verticalAlignment: Text.AlignVCenter
-                        leftPadding: parent.indicator.width + parent.spacing
-                    }
-
-                    checked: false
                 }
             }
         }
@@ -175,22 +161,22 @@ Rectangle {
             visible: text !== ""
         }
         
-        // 扫描结果列表
-        GroupBox {
-            title: "扫描到的音乐文件"
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            visible: isScanning
+        // // 扫描结果列表
+        // GroupBox {
+        //     title: "扫描到的音乐文件"
+        //     Layout.fillWidth: true
+        //     Layout.fillHeight: true
+        //     visible: isScanning
             
-            SongView {
-                anchors.fill: parent
-                // 可以在这里显示扫描到的音乐
-            }
-        }
+        //     // SongView {
+        //     //     anchors.fill: parent
+        //     //     // 可以在这里显示扫描到的音乐
+        //     // }
+        // }
         
-        Item {
-            Layout.fillHeight: true
-        }
+        // Item {
+        //     Layout.fillHeight: true
+        // }
     }
     
     // 文件夹选择对话框
@@ -214,27 +200,18 @@ Rectangle {
         scanStatusText.text = "正在扫描音乐文件..."
         
         // 调用后端扫描功能
-        // if (BackendManager.musicScanner) {
-        //     BackendManager.musicScanner.scanFolder(
-        //         scanPath,
-        //         includeSubfoldersCheck.checked,
-        //         replaceExistingCheck.checked
-        //     )
-        // }
-        console.log(scanPath)
-        BackendManager.scanMusicLibrary(scanPath)
+        console.log("开始扫描路径:", scanPath)
+        BackendManager.scanMusicLibrary([scanPath])
         
-        // 模拟扫描过程（实际应该通过信号连接）
-        scanTimer.start()
     }
     
-    // 扫描完成计时器（模拟）
-    Timer {
-        id: scanTimer
-        interval: 3000
-        onTriggered: {
+    // 连接扫描完成信号
+    Connections {
+        target: BackendManager
+        function onScanFinished() {
             isScanning = false
-            scanStatusText.text = "扫描完成！发现 15 首新音乐"
+            scanStatusText.text = "扫描完成！发现 " + BackendManager.localSongModel.count + " 首新音乐"
+            console.log("扫描完成，发现", BackendManager.localSongModel.count, "首歌曲")
         }
     }
 }

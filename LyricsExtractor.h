@@ -4,10 +4,12 @@
 #include <QObject>
 #include <QStringList>
 #include <QString>
+#include <QtQml/qqmlregistration.h>
 
 class LyricsExtractor : public QObject
 {
     Q_OBJECT
+    QML_ELEMENT
 
 public:
     explicit LyricsExtractor(QObject *parent = nullptr);

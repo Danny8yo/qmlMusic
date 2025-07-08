@@ -18,9 +18,10 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    // 关键: 在qml引擎创建前 初始化管理器
+    // 为了稳定性，BackendManager仍使用手动初始化和注册
+    // 其他类使用QML_ELEMENT自动注册
     BackendManager *backend = BackendManager::instance();
-    qDebug() << "backmanager初始化完成";
+    qDebug() << "手动创建BackendManager实例";
 
     if (!backend->initialize())
     {
@@ -28,15 +29,13 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    qDebug() << "BackendManager 初始化完成，songModel 数据量:" << backend->songModel()->rowCount();
-    qDebug() << "BackendManager 地址:" << backend;
-    qDebug() << "songModel 地址:" << backend->songModel();
+    qDebug() << "BackendManager手动初始化完成，songModel数据量:" << backend->songModel()->rowCount();
 
     QQmlApplicationEngine engine;
 
-    // 手动注册 BackendManager 为单例
+    // BackendManager手动注册，其他类使用QML_ELEMENT自动注册 
     qmlRegisterSingletonInstance("qmltest", 1, 0, "BackendManager", backend);
-    qDebug() << "手动注册 BackendManager 单例到 QML";
+    qDebug() << "使用混合注册: BackendManager手动注册 + 其他类QML_ELEMENT自动注册";
 
     QObject::connect(
         &engine,

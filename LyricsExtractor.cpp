@@ -90,20 +90,42 @@ QStringList LyricsExtractor::findAndLoadLrcFile(const QString &audioFilePath)
     return QStringList();
 }
 
+// 用于拆分歌词为时间戳和歌词文本,给qml的ListView作为model
 QVariantList LyricsExtractor::parseLrcLyrics(const QStringList &lrcLines)
 {
     QVariantList parsedLyrics;
-    QRegularExpression timeRegex(R"(\[(\d{2}):(\d{2})\.(\d{3})\])"); // [mm:ss.sss] 格式
+    // 支持多种时间戳格式：[mm:ss.sss], [mm:ss.ss], [mm:ss.s], [mm:ss]
+    QRegularExpression timeRegex(R"(\[(\d{1,2}):(\d{1,2})(?:\.(\d{1,3}))?\])");
 
     for (const QString &line : lrcLines)
     {
         QRegularExpressionMatch match = timeRegex.match(line);
         if (match.hasMatch())
         {
+            qDebug() << "匹配到时间戳格式,当前行:" << line;
             // 提取时间戳
             int minutes = match.captured(1).toInt();
             int seconds = match.captured(2).toInt();
-            int milliseconds = match.captured(3).toInt();
+            QString millisecondsStr = match.captured(3); // 毫秒部分可能为空
+
+            // 处理毫秒部分
+            int milliseconds = 0;
+            if (!millisecondsStr.isEmpty())
+            {
+                // 根据毫秒位数进行标准化处理
+                if (millisecondsStr.length() == 1)
+                {
+                    milliseconds = millisecondsStr.toInt() * 100; // .5 -> 500ms
+                }
+                else if (millisecondsStr.length() == 2)
+                {
+                    milliseconds = millisecondsStr.toInt() * 10; // .50 -> 500ms
+                }
+                else
+                {
+                    milliseconds = millisecondsStr.toInt(); // .500 -> 500ms
+                }
+            }
 
             // 转换为总毫秒数
             qint64 totalMs = minutes * 60 * 1000 + seconds * 1000 + milliseconds;
@@ -111,12 +133,15 @@ QVariantList LyricsExtractor::parseLrcLyrics(const QStringList &lrcLines)
             // 提取歌词文本（去掉时间戳部分）
             QString lyricsText = line.mid(match.capturedEnd()).trimmed();
 
-            // 跳过空歌词行和作词作曲信息
+            // 跳过空歌词行和各种标识信息
             if (!lyricsText.isEmpty() &&
                 !lyricsText.startsWith("作词") &&
-                !lyricsText.startsWith("作曲"))
+                !lyricsText.startsWith("作曲") &&
+                !lyricsText.startsWith("编曲") &&
+                !lyricsText.startsWith("制作人") &&
+                !lyricsText.startsWith("Written by") &&
+                !lyricsText.contains("QQ音乐动态歌词"))
             {
-
                 QVariantMap lyricsItem;
                 lyricsItem["time"] = totalMs;
                 lyricsItem["text"] = lyricsText;

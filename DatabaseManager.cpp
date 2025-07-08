@@ -13,7 +13,6 @@ DatabaseManager::DatabaseManager(QSqlDatabase database, QObject *parent) : QObje
     {
         qDebug() << "Warning: Database connection is not open";
     }
-
 }
 
 // DatabaseManager::~DatabaseManager()
@@ -253,13 +252,13 @@ bool DatabaseManager::addPlaylist(Playlist *playlist)
     if (query.exec())
     {
         playlist->setId(query.lastInsertId().toInt());
-        
-        //与playlist::updateCoverUrl()中的emit coverUrlChanged()信号建立连接
-        connect(playlist, &Playlist::coverUrlChanged, this, [this,playlist]() {
-            // qDebug() << "!!!!!!!更新 " << playlist->name() << "封面为: " << playlist->relativeCoverPath();
-            this->updatePlaylist(playlist);
-        });
-        
+
+        // 与playlist::updateCoverUrl()中的emit coverUrlChanged()信号建立连接
+        connect(playlist, &Playlist::coverUrlChanged, this, [this, playlist]()
+                {
+            qDebug() << "!!!!!!!更新 " << playlist->name() << "封面为: " << playlist->relativeCoverPath();
+            this->updatePlaylist(playlist); });
+
         return true;
     }
 

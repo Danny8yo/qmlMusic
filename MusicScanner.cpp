@@ -21,6 +21,13 @@ void MusicScanner::startScan(const QStringList& directories)
 
     m_scanDirectories = directories; // 存放的多个目录
     m_shouldStop = false;
+    
+    // 清理之前的Song对象并清空列表
+    for (Song* song : m_foundSongs) {
+        if (song) {
+            song->deleteLater();
+        }
+    }
     m_foundSongs.clear();
 
     // 创建工作线程
@@ -140,8 +147,8 @@ Song* MusicScanner::processMusicFile(const QString& filePath)
 
     // qDebug() << fileInfo.baseName();
     // qDebug() << "unknown";
-    // 创建Song对象
-    Song* song = new Song(filePath);
+    // 创建Song对象，设置parent为this以确保内存管理
+    Song* song = new Song(filePath, this);
 
     // 测试设置基本信息（歌曲信息由Song类调用TagLib实现）
     // song->setTitle(fileInfo.baseName());
