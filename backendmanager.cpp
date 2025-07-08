@@ -150,11 +150,11 @@ void BackendManager::playPlaylist(int playlistId)
         if (!songs.isEmpty())
         {
             m_playerController->loadQueue(songs);
-            qDebug() << "开始播放歌单:" << playlist->name();
+            qDebug() << "开始播放歌单:" << localplaylist->name();
         }
         else
         {
-            qDebug() << "歌单为空:" << playlist->name();
+            qDebug() << "歌单为空:" << localplaylist->name();
         }
     }
     else

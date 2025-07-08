@@ -229,33 +229,33 @@ Item {
                            }
 
                            // 收藏歌单按钮
-                           Button{
-                               id:_like
-                               Layout.alignment: Qt.AlignLeft
-                               Layout.preferredWidth: 35
-                               text:"♥"
+                        //    Button{
+                        //        id:_like
+                        //        Layout.alignment: Qt.AlignLeft
+                        //        Layout.preferredWidth: 35
+                        //        text:"♥"
 
-                               background: Rectangle {
-                                   color: parent.hovered ? "#d2d2d2" : "white"
-                                   border.color: "#ddd"
-                                   radius: 20
-                               }
+                        //        background: Rectangle {
+                        //            color: parent.hovered ? "#d2d2d2" : "white"
+                        //            border.color: "#ddd"
+                        //            radius: 20
+                        //        }
 
-                               contentItem: Text {
-                                   text: parent.text
-                                   color: "#666"
-                                   font.pixelSize: 14
-                                   horizontalAlignment: Text.AlignHCenter
-                                   verticalAlignment: Text.AlignVCenter
-                               }
+                        //        contentItem: Text {
+                        //            text: parent.text
+                        //            color: "#666"
+                        //            font.pixelSize: 14
+                        //            horizontalAlignment: Text.AlignHCenter
+                        //            verticalAlignment: Text.AlignVCenter
+                        //        }
 
-                               TapHandler {
-                                   onTapped: {
-                                       console.log("收藏播放列表")
-                                       // TODO: 实现收藏功能
-                                   }
-                               }
-                           }
+                        //        TapHandler {
+                        //            onTapped: {
+                        //                console.log("收藏播放列表")
+                        //                // TODO: 实现收藏功能
+                        //            }
+                        //        }
+                        //    }
 
                            Button{ //点击后进入添加歌曲进播放列表的界面，能添加的歌曲由数据库提供
                                id:_more
