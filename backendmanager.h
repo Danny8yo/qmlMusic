@@ -19,6 +19,7 @@ class BackendManager : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(SongModel *songModel READ songModel CONSTANT)
+    Q_PROPERTY(SongModel *favoriteModel READ favoriteModel CONSTANT)
     Q_PROPERTY(LocalSongModel *localSongModel READ localSongModel CONSTANT)
     Q_PROPERTY(PlaylistModel *playlistModel READ playlistModel CONSTANT)
     Q_PROPERTY(PlaylistModel *locallistModel READ locallistModel CONSTANT)
@@ -45,6 +46,7 @@ public:
 
     // 公开的模型和控制器
     SongModel *songModel() const { return m_songModel; }
+    SongModel *favoriteModel() const { return m_favoriteModel; }
     LocalSongModel *localSongModel() const { return m_localSongModel; }
     PlaylistModel *playlistModel() const { return m_playlistModel; }
     PlaylistModel *locallistModel() const { return m_locallistModel; }
@@ -61,6 +63,7 @@ public:
     Q_INVOKABLE void playSongById(int songId);
     // ui播放歌单,双击指定id对应的model,让playController播放对应的歌单列表
     Q_INVOKABLE void playPlaylist(int playlistId);
+    Q_INVOKABLE void playPlaylist(QList<Song *> favoritelist); // 直接播放“我的喜欢”列表的歌曲
 
     // 获取特定歌曲
     Q_INVOKABLE Song *getSongById(int songId);
@@ -74,6 +77,9 @@ public:
 
     // 添加歌曲到播放列表
     Q_INVOKABLE void addSongToPlaylist(Song *song, Playlist *playlist);
+
+    // 设置歌曲喜欢状态
+    Q_INVOKABLE void setSongFavorite(Song *song);
 
     // 更新视图
     Q_INVOKABLE void loadSongLibrary();
@@ -107,6 +113,7 @@ private:
     // QML数据模型
     SongModel *m_songModel;
     LocalSongModel *m_localSongModel;
+    SongModel *m_favoriteModel;      // 喜欢的歌曲
     PlaylistModel *m_playlistModel;  // 发现（网页）歌单model,非用户创建的歌单
     PlaylistModel *m_locallistModel; // 本地歌单model
     PlayerController *m_playerController;

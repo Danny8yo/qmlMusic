@@ -15,6 +15,8 @@ class Song : public QObject {
     Q_PROPERTY(QUrl coverArtUrl READ coverArtUrl WRITE setCoverArtUrl NOTIFY coverArtUrlChanged)
     Q_PROPERTY(QString lyricsPath READ lyricsPath WRITE setLyricsPath NOTIFY lyricsPathChanged)
     Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged) // 提供格式化的时长字符串
+
+    Q_PROPERTY(bool isFavorite READ isFavorite WRITE setIsFavorite NOTIFY favoriteChanged)
     QML_ELEMENT
 
 public:
@@ -42,6 +44,7 @@ public:
     QString lyricsPath() const;
     //格式化时长为字符串00:00
     QString durationString() const;
+    bool isFavorite() const;
 
     // Setter
     void setId(int id);
@@ -52,6 +55,7 @@ public:
     void setFilePath(const QString& filePath);
     void setCoverArtUrl(const QUrl& coverArtUrl);
     void setLyricsPath(const QString& lyricsPath);
+    void setIsFavorite(bool favorite);
 
 signals:
     // 属性变化时发出的信号
@@ -63,6 +67,7 @@ signals:
     void filePathChanged();
     void coverArtUrlChanged();
     void lyricsPathChanged();
+    void favoriteChanged(bool isFavorite);
 
 private:
     // 内部成员变量
@@ -74,6 +79,9 @@ private:
     QString m_filePath; //音乐路径
     QUrl m_coverArtUrl;
     QString m_lyricsPath;
+
+    //收藏属性
+    bool m_favorite{false}; // 是否被收藏的标识
 
     // 辅助函数，用于确保缓存目录存在
     QString ensureCachePath(const QString& subfolder);

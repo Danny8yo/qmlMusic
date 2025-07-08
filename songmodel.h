@@ -39,6 +39,7 @@ public:
     Q_INVOKABLE void addSong(Song *song);
     Q_INVOKABLE void removeSong(int index);
     Q_INVOKABLE Song *getSong(int index) const;
+    Q_INVOKABLE QList<Song *> getAllSongs() const; // 获取自身所有歌曲
     Q_INVOKABLE void clear();
 
     // 排序和筛选

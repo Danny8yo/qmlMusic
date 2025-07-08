@@ -92,6 +92,7 @@ bool BackendManager::initialize()
 
     // 初始化数据模型
     m_songModel = new SongModel(this);
+    m_favoriteModel = new SongModel(this);
     m_localSongModel = new LocalSongModel(this);
     m_playlistModel = new PlaylistModel(this);
     m_locallistModel = new PlaylistModel(this);
@@ -159,6 +160,16 @@ void BackendManager::playPlaylist(int playlistId)
     else
     {
         qDebug() << "找不到指定的歌单，ID:" << playlistId;
+    }
+}
+
+void BackendManager::playPlaylist(QList<Song *> favoritelist)
+{
+    if (!favoritelist.isEmpty()) {
+        m_playerController->loadQueue(favoritelist);
+        qDebug() << "开始播放我的喜欢";
+    } else {
+        qDebug() << "我的喜欢为空";
     }
 }
 
@@ -242,15 +253,31 @@ Playlist *BackendManager::getLocalPlaylistByIndex(int index)
 
 void BackendManager::addSongToPlaylist(Song *song, Playlist *playlist)
 {
-    playlist->addSong(song); // 列表操作
-    // 检查是否已经存在该歌曲
-    if (playlist->getAllSongs().contains(song))
-    {
+    if (playlist->getAllSongs().contains(song)) {
         qDebug() << "歌曲已存在于歌单中，跳过添加";
         return;
     }
+    playlist->addSong(song); // 列表操作
+    // 检查是否已经存在该歌曲
+
     m_dbManager->addSongToPlaylist(song->id(), playlist->id()); // 同时更新数据库
 }
+
+void BackendManager::setSongFavorite(Song *song)
+{
+    if (!song->isFavorite()) {
+        song->setIsFavorite(true);
+        qDebug() << "设置喜欢歌曲" << song->coverArtUrl();
+        m_favoriteModel->addSong(song);
+    } else {
+        song->setIsFavorite(false);
+        //m_favoriteModel->
+    }
+    //song->setIsFavorite(favorite); // 设置歌曲喜欢状态
+
+    m_dbManager->updateSong(song); // 更新数据库信息
+}
+
 // Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
 
 void BackendManager::onScanFinished(const QList<Song *> &foundSongs)
@@ -299,17 +326,24 @@ void BackendManager::loadAllPlaylists() // 加载已有歌单
     m_locallistModel->loadPlaylists(localplaylists);
 }
 
-void BackendManager::loadSongLibrary() // 加载所有歌曲
+void BackendManager::loadSongLibrary() //加载所有歌曲
 {
-    if (!m_dbManager || !m_songModel)
-    {
-        return;
+    if (!m_dbManager || !m_songModel) { return; }
+
+    QList<Song *> allsongs = m_dbManager->getAllSongs();
+    QList<Song *> favoritesongs;
+    for (auto &song : allsongs) {
+        if (song->isFavorite()) {
+            qDebug() << "喜欢的歌曲";
+            favoritesongs.append(song);
+        }
     }
 
-    QList<Song *> songs = m_dbManager->getAllSongs();
-    m_songModel->loadSongs(songs);
-    // qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
-    m_playerController->loadQueue(songs); // 让音乐控制器加载播放列表（测试）
+    m_songModel->loadSongs(allsongs); //将其中标记为“我喜欢”的歌曲加入到指定model
+    qDebug() << "歌曲加载成功";
+    m_favoriteModel->loadSongs(favoritesongs);
+    //qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
+    //m_playerController->loadQueue(allsongs); // 让音乐控制器加载播放列表（测试）
     // qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
 }
 

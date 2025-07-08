@@ -9,10 +9,7 @@ extern QString appDir;
 
 DatabaseManager::DatabaseManager(QSqlDatabase database, QObject *parent) : QObject(parent), m_database(database)
 {
-    if (!m_database.isOpen())
-    {
-        qDebug() << "Warning: Database connection is not open";
-    }
+    if (!m_database.isOpen()) { qDebug() << "Warning: Database connection is not open"; }
 }
 
 // DatabaseManager::~DatabaseManager()
@@ -28,8 +25,7 @@ bool DatabaseManager::isDatabaseValid() const
 bool DatabaseManager::executeQuery(const QString &query) //
 {
     QSqlQuery sqlQuery(m_database); // 创建查询对象
-    if (!sqlQuery.exec(query))
-    {
+    if (!sqlQuery.exec(query)) {
         qDebug() << "Query failed:" << query;
         qDebug() << "Error:" << sqlQuery.lastError().text();
         return false;
@@ -39,12 +35,11 @@ bool DatabaseManager::executeQuery(const QString &query) //
 
 bool DatabaseManager::addSong(Song *song)
 {
-    if (!song)
-        return false;
+    if (!song) return false;
 
     QSqlQuery query(m_database);
-    query.prepare(R"(INSERT INTO Songs (filePath, title, artist, album, coverUrl)
-                    VALUES (?, ?, ?, ?, ?))");
+    query.prepare(R"(INSERT INTO Songs (filePath, title, artist, album, coverUrl, isFavorite)
+                    VALUES (?, ?, ?, ?, ?, ?))");
     // “？”对应一个字段值，通过addBindValue绑定实际值，顺序必须与字段列表一致
 
     // query.addBindValue(song->id());
@@ -54,8 +49,9 @@ bool DatabaseManager::addSong(Song *song)
     query.addBindValue(song->album());
     query.addBindValue(song->coverArtUrl().toString());
 
-    if (query.exec())
-    { // 执行
+    query.addBindValue(song->isFavorite());
+
+    if (query.exec()) { // 执行
         song->setId(query.lastInsertId().toInt());
         return true;
     }
@@ -68,16 +64,14 @@ QList<Song *> DatabaseManager::getAllSongs() // 数据库读取歌曲数据并�
 {
     QList<Song *> songs;
     QSqlQuery query(m_database);
-    query.prepare("SELECT SongId, filePath, title, artist, album, coverUrl FROM Songs ORDER BY title");
+    query.prepare("SELECT SongId, filePath, title, artist, album, coverUrl, isFavorite FROM Songs ORDER BY title");
     // QSqlQuery query("SELECT * FROM Songs ORDER BY title", m_database);
 
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         qDebug() << "查询失败:" << query.lastError().text();
         return songs; // 返回空列表
     }
-    while (query.next())
-    {
+    while (query.next()) {
         Song *song = new Song(appDir + query.value("filePath").toString(), this);
         song->setId(query.value("SongId").toInt());
         // song->setFilePath(appDir + query.value("filePath").toString());
@@ -85,6 +79,7 @@ QList<Song *> DatabaseManager::getAllSongs() // 数据库读取歌曲数据并�
         song->setArtist(query.value("artist").toString());
         song->setAlbum(query.value("album").toString());
         song->setCoverArtUrl(QUrl("file://" + appDir + query.value("coverUrl").toString()));
+        song->setIsFavorite(query.value("isFavorite").toBool());
 
         // song->setDuration(query.value("duration").toInt());
 
@@ -99,19 +94,20 @@ QList<Song *> DatabaseManager::getAllSongs() // 数据库读取歌曲数据并�
 
 bool DatabaseManager::updateSong(Song *song)
 {
-    if (!song || song->id() <= 0)
-        return false;
+    if (!song || song->id() <= 0) return false;
 
     QSqlQuery query(m_database);
     // query.prepare(R"(UPDATE songs SET title=?, artist=?, album=?, duration=?,
     //                  cover_art_path=?, lyrics_path=? WHERE SongId=?)");
 
-    query.prepare(R"(UPDATE Songs SET filePath=?, title=?, artist=?, album=?, coverUrl=? WHERE SongId=?)");
-    query.addBindValue(song->filePath());
+    query.prepare(R"(UPDATE Songs SET  title=?, artist=?, album=?, isFavorite=? WHERE SongId=?)");
+    //由于存放的是相对路径，因此在更新数据库时要将filePath和coverArtUrl转换为相对路径(这里暂时假设路径不会发生更改)
+    //query.addBindValue(song->filePath());
     query.addBindValue(song->title());
     query.addBindValue(song->artist());
     query.addBindValue(song->album());
-    query.addBindValue(song->coverArtUrl().toString());
+    //query.addBindValue(song->coverArtUrl().toString());
+    query.addBindValue(song->isFavorite());
     query.addBindValue(song->id());
 
     return query.exec();
@@ -146,8 +142,7 @@ bool DatabaseManager::removeSong(int songId)
     // 先删除关联表中的记录
     query.prepare("DELETE FROM PlaylistSongs WHERE SongID = ?");
     query.addBindValue(songId);
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         m_database.rollback();
         qDebug() << "Failed to delete from PlaylistSongs:" << query.lastError();
         return false;
@@ -156,15 +151,13 @@ bool DatabaseManager::removeSong(int songId)
     // 再删除主表中的记录
     query.prepare("DELETE FROM Songs WHERE SongId = ?");
     query.addBindValue(songId);
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         m_database.rollback();
         qDebug() << "Failed to delete from Songs:" << query.lastError();
         return false;
     }
 
-    if (!m_database.commit())
-    {
+    if (!m_database.commit()) {
         qDebug() << "Commit failed:" << m_database.lastError();
         return false;
     }
@@ -178,8 +171,7 @@ Song *DatabaseManager::getSong(int songId)
     query.prepare("SELECT * FROM Songs WHERE SongId=?");
     query.addBindValue(songId);
 
-    if (query.exec() && query.next())
-    {
+    if (query.exec() && query.next()) {
         Song *song = new Song(appDir + query.value("filePath").toString(), this);
         song->setId(query.value("SongId").toInt());
         // song->setFilePath(appDir + query.value("filePath").toString());
@@ -187,6 +179,7 @@ Song *DatabaseManager::getSong(int songId)
         song->setArtist(query.value("artist").toString());
         song->setAlbum(query.value("album").toString());
         song->setCoverArtUrl(QUrl("file://" + appDir + query.value("coverUrl").toString()));
+        song->setIsFavorite(query.value("isFavorite").toBool());
 
         return song;
     }
@@ -207,13 +200,11 @@ QList<Song *> DatabaseManager::searchSongs(const QString &keyword) // 歌曲可�
     query.addBindValue(searchPattern);
     query.addBindValue(searchPattern);
 
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         qDebug() << "查询失败:" << query.lastError().text();
         return songs; // 返回空列表
     }
-    while (query.next())
-    {
+    while (query.next()) {
         Song *song = new Song(this);
         song->setId(query.value("SongId").toInt());
         song->setTitle(query.value("title").toString());
@@ -221,6 +212,7 @@ QList<Song *> DatabaseManager::searchSongs(const QString &keyword) // 歌曲可�
         song->setAlbum(query.value("album").toString());
         song->setFilePath(appDir + query.value("filePath").toString());
         song->setCoverArtUrl(QUrl("file://" + appDir + query.value("coverUrl").toString()));
+        song->setIsFavorite(query.value("isFavorite").toBool());
         // song->setLyricsPath(query.value("lyrics_path").toString());
         //  song->setDateAdded(query.value("date_added").toDateTime());
         //  song->setPlayCount(query.value("play_count").toInt());
@@ -233,8 +225,7 @@ QList<Song *> DatabaseManager::searchSongs(const QString &keyword) // 歌曲可�
 
 bool DatabaseManager::addPlaylist(Playlist *playlist)
 {
-    if (!playlist)
-        return false;
+    if (!playlist) return false;
 
     QSqlQuery query(m_database);
     query.prepare(R"(INSERT INTO Playlists (name, description, coverUrl, creationDate, ifLocal) 
@@ -249,15 +240,14 @@ bool DatabaseManager::addPlaylist(Playlist *playlist)
     query.addBindValue(playlist->local());
     // query.addBindValue(playlist->size());
 
-    if (query.exec())
-    {
+    if (query.exec()) {
         playlist->setId(query.lastInsertId().toInt());
 
-        // 与playlist::updateCoverUrl()中的emit coverUrlChanged()信号建立连接
-        connect(playlist, &Playlist::coverUrlChanged, this, [this, playlist]()
-                {
-            qDebug() << "!!!!!!!更新 " << playlist->name() << "封面为: " << playlist->relativeCoverPath();
-            this->updatePlaylist(playlist); });
+        //与playlist::updateCoverUrl()中的emit coverUrlChanged()信号建立连接
+        connect(playlist, &Playlist::coverUrlChanged, this, [this, playlist]() {
+            // qDebug() << "!!!!!!!更新 " << playlist->name() << "封面为: " << playlist->relativeCoverPath();
+            this->updatePlaylist(playlist);
+        });
 
         return true;
     }
@@ -271,21 +261,16 @@ QList<Playlist *> DatabaseManager::getAllPlaylists()
     QList<Playlist *> playlists;
     QSqlQuery query("SELECT * FROM Playlists ORDER BY creationDate DESC", m_database);
 
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         qDebug() << "查询失败:" << query.lastError().text();
         return playlists; // 返回空列表
     }
-    while (query.next())
-    {
+    while (query.next()) {
         Playlist *playlist = getPlaylist(query.value("PlaylistId").toInt());
 
-        if (playlist)
-        {
+        if (playlist) {
             playlists.append(playlist);
-        }
-        else
-        {
+        } else {
             qDebug() << "无法获取播放列表ID:" << query.value("PlalyistId").toInt();
         }
     }
@@ -297,8 +282,7 @@ QList<Playlist *> DatabaseManager::getAllPlaylists()
 
 bool DatabaseManager::updatePlaylist(Playlist *playlist)
 {
-    if (!playlist || playlist->id() <= 0)
-        return false;
+    if (!playlist || playlist->id() <= 0) return false;
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE Playlists SET name=?, description=?, coverUrl=?, ifLocal=? WHERE PlaylistId=?");
@@ -322,8 +306,7 @@ bool DatabaseManager::deletePlaylist(int playlistId)
     // 先删除关联表中的记录
     query.prepare("DELETE FROM PlaylistSongs WHERE PlaylistId = ?");
     query.addBindValue(playlistId);
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         m_database.rollback();
         qDebug() << "Failed to delete from PlaylistSongs:" << query.lastError();
         return false;
@@ -332,15 +315,13 @@ bool DatabaseManager::deletePlaylist(int playlistId)
     // 再删除主表中的记录
     query.prepare("DELETE FROM Playlists WHERE PlaylistId = ?");
     query.addBindValue(playlistId);
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         m_database.rollback();
         qDebug() << "Failed to delete from Playlists:" << query.lastError();
         return false;
     }
 
-    if (!m_database.commit())
-    {
+    if (!m_database.commit()) {
         qDebug() << "Commit failed:" << m_database.lastError();
         return false;
     }
@@ -354,8 +335,7 @@ Playlist *DatabaseManager::getPlaylist(int playlistId)
     query.prepare("SELECT * FROM Playlists WHERE PlaylistId=?");
     query.addBindValue(playlistId);
 
-    if (query.exec() && query.next())
-    {
+    if (query.exec() && query.next()) {
         Playlist *playlist = new Playlist(this);
         playlist->setId(query.value("PlaylistId").toInt());
         playlist->setName(query.value("name").toString());
@@ -363,10 +343,7 @@ Playlist *DatabaseManager::getPlaylist(int playlistId)
 
         // 只有当 coverUrl 不为空时才设置
         QString coverUrlFromDb = query.value("coverUrl").toString();
-        if (!coverUrlFromDb.isEmpty())
-        {
-            playlist->setCoverUrl(QUrl("file://" + appDir + coverUrlFromDb));
-        }
+        if (!coverUrlFromDb.isEmpty()) { playlist->setCoverUrl(QUrl("file://" + appDir + coverUrlFromDb)); }
 
         playlist->setCreationDate(query.value("creationDate").toDateTime());
         playlist->setLocal(query.value("ifLocal").toBool());
@@ -374,8 +351,7 @@ Playlist *DatabaseManager::getPlaylist(int playlistId)
         QList<Song *> songs;
         // 同时将该歌单的歌曲也初始化
         // 根据searchSongInPlaylist(int playlistId)返回的id列表，去获得歌曲，然后循环遍历添加
-        for (auto &item : songIds)
-        {
+        for (auto &item : songIds) {
             songs.append(getSong(item));
         }
         playlist->setSongs(songs);
@@ -393,18 +369,13 @@ QList<int> DatabaseManager::searchSongInPlaylist(int playlistId) // 查询某歌
     query.prepare(R"(SELECT * FROM PlaylistSongs WHERE PlaylistID = ?)");
     query.addBindValue(playlistId);
     // if (query.exec() && query.next()) { songids.append(query.value("SongID").toInt()); }
-    if (!query.exec())
-    {
+    if (!query.exec()) {
         qDebug() << "查询失败:" << query.lastError().text();
         return songIds; // 返回空列表
     }
 
-    while (query.next())
-    {
-        if (query.isValid())
-        {
-            songIds.append(query.value("SongID").toInt());
-        }
+    while (query.next()) {
+        if (query.isValid()) { songIds.append(query.value("SongID").toInt()); }
     }
     return songIds;
 }
@@ -412,8 +383,7 @@ bool DatabaseManager::addSongToPlaylist(int songId, int playlistId) // 中间表
 // 中间表格处理Song与playlist的关系
 {
     Song *song = getSong(songId);
-    if (!song)
-    {
+    if (!song) {
         qDebug() << "The song not exist!";
         return false;
     }

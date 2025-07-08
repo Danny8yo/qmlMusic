@@ -155,6 +155,11 @@ QString Song::durationString() const
     return QString("%1:%2").arg(minutes, 2, 10, QChar('0')).arg(seconds, 2, 10, QChar('0'));
 }
 
+bool Song::isFavorite() const
+{
+    return m_favorite;
+}
+
 // --- Setters ---
 void Song::setId(int id)
 {
@@ -223,6 +228,17 @@ void Song::setLyricsPath(const QString &lyricsPath)
         m_lyricsPath = lyricsPath;
 
         emit lyricsPathChanged();
+    }
+}
+
+void Song::setIsFavorite(bool favorite)
+{
+    if (m_favorite != favorite) {
+        m_favorite = favorite;
+        emit favoriteChanged(m_favorite);
+
+        // 调试输出
+        qDebug() << "Song" << m_title << "favorite status changed to:" << m_favorite;
     }
 }
 

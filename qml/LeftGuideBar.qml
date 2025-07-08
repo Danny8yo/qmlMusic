@@ -7,10 +7,10 @@ Rectangle {
     id: sideBar
     width: 200
     color: "#d2d2d2"
-    
-    // 导航信号
+
+    // 导航信号（向MusicUi.qml传递）
     signal navigationRequested(string page)
-    signal mylistRequested(var playlistId)
+    signal mylistRequested(var playlistId)//
 
     // 自定义歌单
     //property var myList : []// 存的数据是添加的自定义歌单
@@ -88,7 +88,7 @@ Rectangle {
 
                         TapHandler {
                             onTapped: {
-                                console.log("Clicked:", model.title,model.page);
+                                console.log("Clicked:", model.title);
                                 //将点击的页面传递出去
                                 sideBar.navigationRequested(model.page)
                             }
@@ -107,12 +107,12 @@ Rectangle {
                 text: parent.text
                 horizontalAlignment: Text.AlignHCenter
             }
-            
+
             background: Rectangle {
                 color: parent.hovered ? "#e0e0e0" : "#d2d2d2"
                 radius: 4
             }
-            
+
             TapHandler {
                 onTapped: {
                     console.log("Clicked: 扫描音乐")
@@ -179,7 +179,6 @@ Rectangle {
                 }
         }
         // 播放列表项
-        //Repeater {
         ListView {
             id:_locallistView
             //anchors.fill: parent
@@ -209,10 +208,18 @@ Rectangle {
                         // mylistRequested(modelData.id)
                         console.log("点击", model.name, model.id)
 
-                        mylistRequested(model.id)
+                        sideBar.mylistRequested(model.id)//如果当前页面已经是播放列表详情页，再次点击（新建歌单）歌单名称时，
+                                                        //无法更新当前展示的播放列表详情页，而是会重复加载已经被展示的
+                                                        //播放列表详情页，除非当前页面已经退出
+                                                        //原因：该信号由MusicUi.qml接收，并且生成组件的需求由其中的Loader执行
+                                                        // 当 source（也就是重复点击新建歌单名称，向Loader重复请求创建source为PlaylistView.qml的组件） 不变时，
+                                                        //Loader 会​​复用已有实例​​（也就是第一个被创建的播放列表详情页），不会重新创建组件
+                                                        // onLoaded 也 ​​不会再次触发​​
+                                                        // 因此必须要先清空原有suorce,并且重新赋值
+
                     }
                 }
-                TapHandler {
+                TapHandler { // 右键点击时出现删除，重命名的选项（功能还未实现）
                     acceptedButtons: Qt.RightButton
                     onTapped: {
                         _choiceMenu.popup()
@@ -226,12 +233,12 @@ Rectangle {
                     MenuItem {
                         text: "删除"
                         //BackendManager.
-                        onTriggered: console.log("删除:", modelData)
+                        onTriggered: console.log("删除:")
                     }
 
                     MenuItem {
                         text: "重命名"
-                        onTriggered: console.log("重命名:", modelData)
+                        onTriggered: console.log("重命名:")
                     }
                 }
             }

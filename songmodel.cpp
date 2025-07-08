@@ -108,6 +108,11 @@ Song *SongModel::getSong(int index) const
     return nullptr;
 }
 
+QList<Song *> SongModel::getAllSongs() const
+{
+    return m_songs;
+}
+
 void SongModel::clear()
 {
     beginResetModel();

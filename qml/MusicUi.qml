@@ -61,6 +61,7 @@ Item {
         _topBar.updateNavigationButtons()
     }
     
+
     // 后退函数 - 只处理播放列表导航
     function goBack() {
         // 只处理播放列表相关的后退
@@ -165,9 +166,11 @@ Item {
                             componentSource = "PlaylistGridView.qml"
                     }
                     
-                    if (source.toString() !== componentSource) {
-                        source = componentSource
-                    }
+                    // if (source.toString() !== componentSource) {
+                    //     source = componentSource
+                    // }
+                    source = ""//清空
+                    source = componentSource// 立即切回目标组件
                 }
                 
                 // 为加载的组件设置导航函数

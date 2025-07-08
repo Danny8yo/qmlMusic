@@ -312,6 +312,20 @@ Rectangle {
                     icon.source: "qrc:/playControl/resources/love.png"
                     icon.height: 30
                     icon.width: 30
+                    onClicked: {
+                        let song = BackendManager.playerController.currentSong
+                        BackendManager.setSongFavorite(song)
+                        // if(!song.isFavorite) {
+                        //     BackendManager.setSongFavorite(song, true)
+                        // } else {
+                        //     BackendManager.setSongFavorite(song, false)
+                        // }
+                        console.log("loveButton clicked",song.coverArtUrl)
+
+
+
+
+                    }
                 }
 
                 ToolButton {
