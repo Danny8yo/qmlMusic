@@ -146,7 +146,7 @@ Rectangle {
             indeterminate: true
             
             background: Rectangle {
-                color: "#e0e0e0"
+                color: "red"
                 radius: 5
             }
         }

@@ -84,9 +84,8 @@ Item {
                         anchors.centerIn: parent
 
                         // source: "file:///root/MusicTest/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
-                        source: {
-                            return BackendManager.playerController.currentSong.coverArtUrl
-                        }
+                        source: BackendManager.playerController.currentSong.coverArtUrl
+
 
                         fillMode: Image.PreserveAspectFit  // 保持比例缩放
                     }

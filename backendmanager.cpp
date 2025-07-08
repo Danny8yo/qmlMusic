@@ -278,7 +278,25 @@ void BackendManager::setSongFavorite(Song *song)
     else
     {
         song->setIsFavorite(false);
-        // m_favoriteModel->
+
+        if (!m_favoriteModel || !m_dbManager) {
+            qDebug() << "模型或数据库管理器未初始化";
+            return;
+        }
+
+        // 从模型中找到并删除
+        // QList<Song *> songs = m_favoriteModel->getAllSongs();
+        // for(auto &song1 : songs) {
+
+        // }
+        for (int i = 0; i < m_favoriteModel->rowCount(); ++i) {
+            Song *song1 = m_favoriteModel->getSong(i);
+            if (song1 && song1->id() == song->id()) {
+                m_favoriteModel->removeSong(i);
+                qDebug() << "成功取消喜欢，ID:" << song->id();
+                break;
+            }
+        }
     }
     // song->setIsFavorite(favorite); // 设置歌曲喜欢状态
 
@@ -384,6 +402,7 @@ void BackendManager::deleteLocalPlaylist(int playlistId)
     if (m_dbManager->deletePlaylist(playlistId))
     {
         // 从模型中找到并删除
+        //for(auto &plalist : m_locallistModel)
         for (int i = 0; i < m_locallistModel->rowCount(); ++i)
         {
             Playlist *playlist = m_locallistModel->getPlaylist(i);
