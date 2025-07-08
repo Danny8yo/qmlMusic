@@ -165,10 +165,13 @@ void BackendManager::playPlaylist(int playlistId)
 
 void BackendManager::playPlaylist(QList<Song *> favoritelist)
 {
-    if (!favoritelist.isEmpty()) {
+    if (!favoritelist.isEmpty())
+    {
         m_playerController->loadQueue(favoritelist);
         qDebug() << "开始播放我的喜欢";
-    } else {
+    }
+    else
+    {
         qDebug() << "我的喜欢为空";
     }
 }
@@ -253,7 +256,8 @@ Playlist *BackendManager::getLocalPlaylistByIndex(int index)
 
 void BackendManager::addSongToPlaylist(Song *song, Playlist *playlist)
 {
-    if (playlist->getAllSongs().contains(song)) {
+    if (playlist->getAllSongs().contains(song))
+    {
         qDebug() << "歌曲已存在于歌单中，跳过添加";
         return;
     }
@@ -265,15 +269,18 @@ void BackendManager::addSongToPlaylist(Song *song, Playlist *playlist)
 
 void BackendManager::setSongFavorite(Song *song)
 {
-    if (!song->isFavorite()) {
+    if (!song->isFavorite())
+    {
         song->setIsFavorite(true);
         qDebug() << "设置喜欢歌曲" << song->coverArtUrl();
         m_favoriteModel->addSong(song);
-    } else {
-        song->setIsFavorite(false);
-        //m_favoriteModel->
     }
-    //song->setIsFavorite(favorite); // 设置歌曲喜欢状态
+    else
+    {
+        song->setIsFavorite(false);
+        // m_favoriteModel->
+    }
+    // song->setIsFavorite(favorite); // 设置歌曲喜欢状态
 
     m_dbManager->updateSong(song); // 更新数据库信息
 }
@@ -326,25 +333,30 @@ void BackendManager::loadAllPlaylists() // 加载已有歌单
     m_locallistModel->loadPlaylists(localplaylists);
 }
 
-void BackendManager::loadSongLibrary() //加载所有歌曲
+void BackendManager::loadSongLibrary() // 加载所有歌曲
 {
-    if (!m_dbManager || !m_songModel) { return; }
+    if (!m_dbManager || !m_songModel)
+    {
+        return;
+    }
 
     QList<Song *> allsongs = m_dbManager->getAllSongs();
     QList<Song *> favoritesongs;
-    for (auto &song : allsongs) {
-        if (song->isFavorite()) {
+    for (auto &song : allsongs)
+    {
+        if (song->isFavorite())
+        {
             qDebug() << "喜欢的歌曲";
             favoritesongs.append(song);
         }
     }
 
-    m_songModel->loadSongs(allsongs); //将其中标记为“我喜欢”的歌曲加入到指定model
+    m_songModel->loadSongs(allsongs); // 将其中标记为“我喜欢”的歌曲加入到指定model
     qDebug() << "歌曲加载成功";
     m_favoriteModel->loadSongs(favoritesongs);
-    //qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
-    //m_playerController->loadQueue(allsongs); // 让音乐控制器加载播放列表（测试）
-    // qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
+    // qDebug() << " 1111111111111111111111111111111111111111111111111111111player加载";
+    // m_playerController->loadQueue(allsongs); // 让音乐控制器加载播放列表（测试）
+    //  qDebug() << "2222222222222222222222222222222222222222222222222222pasdadada";
 }
 
 Playlist *BackendManager::createLocalPlaylist(const QString &listname) // 创建新歌单
@@ -359,11 +371,69 @@ Playlist *BackendManager::createLocalPlaylist(const QString &listname) // 创建
     return playlist;
 }
 
-// void BackendManager::removeLocalPlaylist(Playlist *playlist)
-// {
-//     for (auto &list : m_locallistModel->)
-//     //m_locallistModel->removePlaylist()
-// }
+// 删除本地歌单
+void BackendManager::deleteLocalPlaylist(int playlistId)
+{
+    if (!m_locallistModel || !m_dbManager)
+    {
+        qDebug() << "模型或数据库管理器未初始化";
+        return;
+    }
+
+    // 从数据库删除
+    if (m_dbManager->deletePlaylist(playlistId))
+    {
+        // 从模型中找到并删除
+        for (int i = 0; i < m_locallistModel->rowCount(); ++i)
+        {
+            Playlist *playlist = m_locallistModel->getPlaylist(i);
+            if (playlist && playlist->id() == playlistId)
+            {
+                m_locallistModel->removePlaylist(i);
+                qDebug() << "成功删除歌单，ID:" << playlistId;
+                break;
+            }
+        }
+    }
+    else
+    {
+        qDebug() << "删除歌单失败，ID:" << playlistId;
+    }
+}
+
+// 重命名本地歌单
+void BackendManager::renameLocalPlaylist(int playlistId, const QString &newName)
+{
+    if (!m_locallistModel || !m_dbManager)
+    {
+        qDebug() << "模型或数据库管理器未初始化";
+        return;
+    }
+
+    // 从模型中找到歌单
+    for (int i = 0; i < m_locallistModel->rowCount(); ++i)
+    {
+        Playlist *playlist = m_locallistModel->getPlaylist(i);
+        if (playlist && playlist->id() == playlistId)
+        {
+            // 更新歌单名称
+            playlist->setName(newName);
+
+            // 更新数据库
+            if (m_dbManager->updatePlaylist(playlist))
+            {
+                qDebug() << "成功重命名歌单，ID:" << playlistId << "新名称:" << newName;
+                // 触发模型更新
+                m_locallistModel->updatePlaylistAtIndex(i);
+            }
+            else
+            {
+                qDebug() << "重命名歌单失败，ID:" << playlistId;
+            }
+            break;
+        }
+    }
+}
 void BackendManager::connectSignals()
 {
     // 连接扫描器信号

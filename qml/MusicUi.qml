@@ -65,26 +65,18 @@ Item {
     // 后退函数 - 只处理播放列表导航
     function goBack() {
         // 只处理播放列表相关的后退
-        if (playlistNavigationHistory.length > 0 && playlistHistoryIndex > 0) {
-            playlistHistoryIndex--
-            let targetPage = playlistNavigationHistory[playlistHistoryIndex]
-            currentPage = targetPage
-            _contentLoader.loadPage(targetPage)
-            _topBar.updateNavigationButtons()
-        }
+        // if (playlistNavigationHistory.length > 0 && playlistHistoryIndex > 0) {
+        //     playlistHistoryIndex--
+        //     let targetPage = playlistNavigationHistory[playlistHistoryIndex]
+        //     currentPage = targetPage
+        //     _contentLoader.loadPage(targetPage)
+        //     _topBar.updateNavigationButtons()
+        // }
+        _contentLoader.loadPage("discover") // 直接返回到发现页面
+        _topBar.updateNavigationButtons()
     }
     
     // 前进函数 - 只处理播放列表导航
-    function goForward() {
-        // 只处理播放列表相关的前进
-        if (playlistNavigationHistory.length > 0 && playlistHistoryIndex < playlistNavigationHistory.length - 1) {
-            playlistHistoryIndex++
-            let targetPage = playlistNavigationHistory[playlistHistoryIndex]
-            currentPage = targetPage
-            _contentLoader.loadPage(targetPage)
-            _topBar.updateNavigationButtons()
-        }
-    }
 
     RowLayout {
         spacing: 0
@@ -116,11 +108,9 @@ Item {
             TopBar {
                 id: _topBar
 
-                //遮盖内容
-                z:1
-
                 Layout.fillWidth: true // 填充宽度
                 Layout.preferredHeight: 60 // 固定高度
+                z: 1 // 确保 TopBar 在主内容之上
                 
                 // 连接导航按钮
                 onBackRequested: _root.goBack()
@@ -141,6 +131,8 @@ Item {
                 id: _contentLoader
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                clip: true // 确保内容被正确裁剪
+                z: 0 // 确保主内容在最底层
                 
                 // 页面加载函数
                 function loadPage(pageName) {
@@ -170,7 +162,7 @@ Item {
                     //     source = componentSource
                     // }
                     source = ""//清空
-                    source = componentSource// 立即切回目标组件
+                    source = componentSource// 立即切换
                 }
                 
                 // 为加载的组件设置导航函数

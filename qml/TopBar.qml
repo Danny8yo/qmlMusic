@@ -38,17 +38,17 @@ Rectangle{
                     onTapped: _topBar.backRequested()
                 }
             }
-            ToolButton{
-                id: _forwardButton
-                icon.source: "qrc:/OtherUi/resources/forward.png"
-                icon.height: 25
-                icon.width: 25
-                enabled: _topBar.forwardEnabled
+            // ToolButton{
+            //     id: _forwardButton
+            //     icon.source: "qrc:/OtherUi/resources/forward.png"
+            //     icon.height: 25
+            //     icon.width: 25
+            //     enabled: _topBar.forwardEnabled
                 
-                TapHandler {
-                    onTapped: _topBar.forwardRequested()
-                }
-            }
+            //     TapHandler {
+            //         onTapped: _topBar.forwardRequested()
+            //     }
+            // }
 
             //搜索框
             TextField{

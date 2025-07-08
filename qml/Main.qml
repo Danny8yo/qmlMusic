@@ -40,7 +40,7 @@ Window {
             id: _stack
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // Layout.preferredHeight: parent.height - _playController.height // 填充剩余高度
+            clip: true // 确保内容被正确裁剪在边界内
             initialItem: MusicUi {
 
             }

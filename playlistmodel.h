@@ -39,6 +39,7 @@ public:
     Q_INVOKABLE void removePlaylist(int index);
     Q_INVOKABLE Playlist *getPlaylist(int index) const;
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void updatePlaylistAtIndex(int index); // 触发指定索引的数据更新
 
 signals:
     void countChanged();

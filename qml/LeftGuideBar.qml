@@ -12,6 +12,10 @@ Rectangle {
     signal navigationRequested(string page)
     signal mylistRequested(var playlistId)//
 
+    // 添加属性来保存当前选中的歌单ID和信息
+    property int currentSelectedPlaylistId: -1
+    property string currentSelectedPlaylistName: ""
+
     // 自定义歌单
     //property var myList : []// 存的数据是添加的自定义歌单
 
@@ -138,24 +142,46 @@ Rectangle {
                 }
 
 
-                Button {
-                    Text{
-                        text:"+"
-                        color:"black"
+                // 添加新歌单按钮
+                Rectangle {
+                    width: 25
+                    height: 25
+                    color: "transparent"
+                    radius: 4
+
+                    Text {
+                        text: "+"
+                        anchors.centerIn: parent
+                        font.pixelSize: 24
+                        color: "black"
                     }
-                    //background: null
-                    onClicked: {
-                        _addDialog.open()
-                        //BackendManager.playlistModel.addPlaylist(BackendManager.createPlaylist(listname))
-                    }
+
+                    TapHandler {
+                        acceptedButtons: Qt.LeftButton
+                        onTapped: {
+                            _addDialog.open()
+                            // BackendManager.playlistModel.addPlaylist(BackendManager.createPlaylist(listname))
+                        }
+                    } 
                 }
+                // Button {
+                    
+                //     Text{
+                //         text:"+"
+                //         color:"black"
+                //     }
+                //     //background: null
+                //     onClicked: {
+                //         _addDialog.open()
+                //         //BackendManager.playlistModel.addPlaylist(BackendManager.createPlaylist(listname))
+                //     }
+                // }
             }
 
             Dialog {
                     id: _addDialog
                     title: "请输入"
                     anchors.centerIn: parent
-
                     TextField {
                         id: inputField
                         width: parent.width
@@ -219,34 +245,102 @@ Rectangle {
 
                     }
                 }
-                TapHandler { // 右键点击时出现删除，重命名的选项（功能还未实现）
+                TapHandler { // 右键点击时出现删除，重命名的选项
                     acceptedButtons: Qt.RightButton
                     onTapped: {
-                        _choiceMenu.popup()
-
+                        sideBar.currentSelectedPlaylistId = model.id
+                        sideBar.currentSelectedPlaylistName = model.name
+                        _contextMenu.popup()
                     }
                 }
 
-                Menu {
-                    id: _choiceMenu
+            }
+        }
+    }
 
-                    MenuItem {
-                        text: "删除"
-                        //BackendManager.
-                        onTriggered: console.log("删除:")
-                    }
+    // 右键菜单 - 移到外部
+    Menu {
+        id: _contextMenu
 
-                    MenuItem {
-                        text: "重命名"
-                        onTriggered: console.log("重命名:")
-                    }
-                }
+        MenuItem {
+            text: "删除"
+            onTriggered: {
+                _deleteDialog.open()
             }
         }
 
-        // Item {
-        //     Layout.fillHeight: true
-        // }
+        MenuItem {
+            text: "重命名"
+            onTriggered: {
+                _renameField.text = sideBar.currentSelectedPlaylistName
+                _renameDialog.open()
+            }
+        }
+    }
 
+    // 删除确认对话框
+    Dialog {
+        id: _deleteDialog
+        title: "确认删除"
+        anchors.centerIn: parent
+        
+        ColumnLayout {
+            Text {
+                text: "确定要删除这个歌单吗？此操作不可撤销。"
+                wrapMode: Text.WordWrap
+                Layout.preferredWidth: 250
+            }
+        }
+        
+        standardButtons: Dialog.Yes | Dialog.No
+        
+        onAccepted: {
+            if (sideBar.currentSelectedPlaylistId !== -1) {
+                BackendManager.deleteLocalPlaylist(sideBar.currentSelectedPlaylistId)
+                console.log("删除歌单，ID:", sideBar.currentSelectedPlaylistId)
+                // 重置选中状态
+                sideBar.currentSelectedPlaylistId = -1
+                sideBar.currentSelectedPlaylistName = ""
+            }
+        }
+    }
+    
+    // 重命名对话框
+    Dialog {
+        id: _renameDialog
+        title: "重命名歌单"
+        anchors.centerIn: parent
+        
+        ColumnLayout {
+            Text {
+                text: "请输入新的歌单名称："
+            }
+            
+            TextField {
+                id: _renameField
+                Layout.preferredWidth: 200
+                placeholderText: "歌单名称"
+            }
+        }
+        
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        
+        onAccepted: {
+            if (sideBar.currentSelectedPlaylistId !== -1 && _renameField.text.trim() !== "") {
+                BackendManager.renameLocalPlaylist(sideBar.currentSelectedPlaylistId, _renameField.text.trim())
+                console.log("重命名歌单，ID:", sideBar.currentSelectedPlaylistId, "新名称:", _renameField.text.trim())
+                // 重置选中状态
+                sideBar.currentSelectedPlaylistId = -1
+                sideBar.currentSelectedPlaylistName = ""
+                _renameField.text = ""
+            }
+        }
+        
+        onRejected: {
+            _renameField.text = ""
+            // 重置选中状态
+            sideBar.currentSelectedPlaylistId = -1
+            sideBar.currentSelectedPlaylistName = ""
+        }
     }
 }

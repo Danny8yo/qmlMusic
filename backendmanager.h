@@ -90,6 +90,8 @@ public:
     Q_INVOKABLE Playlist *createLocalPlaylist(const QString &listname); // 创建“我的歌单”时使用
     // Q_INVOKABLE Song *createSong();
     //  删除歌单（本地）
+    Q_INVOKABLE void deleteLocalPlaylist(int playlistId); // 删除本地歌单
+    Q_INVOKABLE void renameLocalPlaylist(int playlistId, const QString &newName); // 重命名本地歌单
     // Q_INVOKABLE void removeLocalPlaylist(Playlist *playlist);
 
     // DatabaseManager测试

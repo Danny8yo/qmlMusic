@@ -10,6 +10,7 @@ Item {
     id:_playlist
     anchors.fill: parent
     visible: true
+
     
     // 播放列表属性
     property int playlistId: -1
@@ -69,7 +70,6 @@ Item {
     // 总体垂直
 
     ColumnLayout{
-
         spacing: 0
         anchors.fill: parent
 
@@ -78,11 +78,11 @@ Item {
             id:_headerBar
             Layout.fillWidth: true
             Layout.preferredHeight: 30
-            color: "#dac1c1"
+            color: "#e0e0e0"
             Button {
-                text: "返回"
+                text: "<"
                 background: Rectangle {
-                    color: parent.hovered ? "#e0e0e0" : "transparent"
+                    color: parent.hovered ? "#d2d2d2" : "transparent"
                     radius: 4
                 }
                 
@@ -103,7 +103,9 @@ Item {
             id:_top
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#95cac5"
+            // color: "#95cac5"
+            color: "#e0e0e0"
+
            RowLayout{
                //左侧封面矩形
                anchors.fill:parent
@@ -111,14 +113,17 @@ Item {
                Rectangle{
                    id:_coverShow
                    Layout.fillWidth: true
-                   Layout.fillHeight: true
+                   // Layout.preferredWidth: parent.width * 0.8
+                   Layout.preferredHeight: parent.height * 0.8
+                   // Layout.fillHeight: true
                    //Layout.preferredHeight: 500
-                   color: "#dac1c1"
+                   // color: "#dac1c1"
+                   color: "transparent"
                    Image {
                        id: _cover
                        anchors.fill:parent
-                       width: Math.min(parent.width, parent.height) / 2 // 取宽高中的较小值
-                       height: width // 强制保持正方形
+                       // width: Math.min(parent.width, parent.height) / 2 // 取宽高中的较小值
+                       // height: width // 强制保持正方形
                        //width: 200
                        //height:200
                        anchors.centerIn: parent
@@ -127,12 +132,8 @@ Item {
                        source: {
                            return "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
                        }
-
                        fillMode: Image.PreserveAspectFit  // 保持比例缩放
-
                    }
-
-
                }
 
                // 右侧歌单信息矩形
@@ -140,7 +141,8 @@ Item {
                    // Layout.fillWidth: true
                    Layout.preferredWidth: parent.width * 0.2
                    Layout.fillHeight: true
-                   color: "#dac1c1"
+                   // color: "#dac1c1"
+                   color: "transparent"
 
                    ColumnLayout{
                        anchors.fill:parent
@@ -200,7 +202,8 @@ Item {
                            Button{
                                id:_play
                                Layout.alignment: Qt.AlignLeft
-                               text:"▶ 播放"
+                               Layout.preferredWidth: 35
+                               text:"▶"
 
                                background: Rectangle {
                                    color: parent.hovered ? "#1976D2" : "#2196F3"
@@ -229,10 +232,11 @@ Item {
                            Button{
                                id:_like
                                Layout.alignment: Qt.AlignLeft
-                               text:"♥ 喜欢"
+                               Layout.preferredWidth: 35
+                               text:"♥"
 
                                background: Rectangle {
-                                   color: parent.hovered ? "#e0e0e0" : "white"
+                                   color: parent.hovered ? "#d2d2d2" : "white"
                                    border.color: "#ddd"
                                    radius: 20
                                }
@@ -256,10 +260,11 @@ Item {
                            Button{ //点击后进入添加歌曲进播放列表的界面，能添加的歌曲由数据库提供
                                id:_more
                                Layout.alignment: Qt.AlignLeft
+                               Layout.preferredWidth: 35
                                text:"+"
 
                                background: Rectangle {
-                                   color: parent.hovered ? "#e0e0e0" : "transparent"
+                                   color: parent.hovered ? "#d2d2d2" : "transparent"
                                    radius: 20
                                }
 
@@ -280,19 +285,17 @@ Item {
                                }
                            }
                        }
-
                    }//ColumnLayout
-
-
-
                }
+
                Rectangle {// _addsongView的矩形
                    //Layout.fillWidth: true
                    Layout.preferredWidth: parent.width * 0.3
                    Layout.fillHeight: true
                    //color: "red"
-                   color:"#dac1c1"
-                   ListView{
+                   color:"transparent"
+
+                   ListView {
                        id:_addsongView
                        // Layout.fillHeight: true
                        // Layout.fillWidth: true
@@ -303,7 +306,7 @@ Item {
 
                        //
                        highlight: Rectangle {
-                           color: "#bdd3d1"
+                           color: "#e0e0e0"
                            width: _addsongView.width
                            height: 30
                            radius: 4  // 可选圆角
@@ -316,7 +319,7 @@ Item {
                            height: 60
                            // color: index === songView.currentIndex ? "#e3f2fd" :
                            //        (index % 2 ? "#f5f5f5" : "white")
-                           color: index === _addsongView.currentIndex ? "white" : "#95cac5"
+                           color: index === _addsongView.currentIndex ? "white" : "#d2d2d2"
 
                            RowLayout {
                                anchors.fill: parent
@@ -327,7 +330,7 @@ Item {
                                Rectangle {
                                    width: 40
                                    height: 40
-                                   color: "#bdd3d1"
+                                   // color: "#bdd3d1"
                                    radius: 4
                                    Image {
                                        anchors.fill: parent
@@ -396,7 +399,7 @@ Item {
             id: _songListContainer
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#95cac5"
+            color: "#d2d2d2"
             
             ListView {
                 id: _playlistSongList
@@ -407,7 +410,7 @@ Item {
                 delegate: Rectangle {
                     width: _playlistSongList.width
                     height: 60
-                    color: index === _playlistSongList.currentIndex ? "white" : "#95cac5"
+                    color: index === _playlistSongList.currentIndex ? "white" : "transparent"
 
                     RowLayout {
                         anchors.fill: parent
@@ -416,40 +419,40 @@ Item {
 
                         // 歌曲序号
                         Text {
-                            Layout.preferredWidth: 30
-                            text: (index + 1).toString().padStart(2, '0')
-                            font.pixelSize: 14
-                            color: "#666"
-                            horizontalAlignment: Text.AlignCenter
+                           Layout.preferredWidth: 30
+                           text: (index + 1).toString().padStart(2, '0')
+                           font.pixelSize: 14
+                           color: "#666"
+                           horizontalAlignment: Text.AlignCenter
                         }
 
                         //封面
                         Rectangle {
-                            width: 50
-                            height: 50
-                            color: "#bdd3d1"
-                            radius: 4
+                           width: 50
+                           height: 50
+                           color: "#bdd3d1"
+                           radius: 4
 
-                            Image {
+                           Image {
                                 anchors.fill: parent
                                 source: modelData ? modelData.coverArtUrl : "file://" + BackendManager.appDirPath + "/test_Music/Local_Playlist/covers/最好的时光 - 安溥 anpu.jpg"
                                 fillMode: Image.PreserveAspectFit
-                            }
+                           }
                         }
 
                         // 歌曲信息
                         ColumnLayout {
-                            Layout.fillWidth: true
-                            spacing: 5
+                           Layout.fillWidth: true
+                           spacing: 5
 
-                            Text {
+                           Text {
                                 Layout.fillWidth: true
                                 text: modelData ? (modelData.title || "未知标题") : "未知标题"
                                 font.pixelSize: 14
                                 font.bold: true
                                 color: "#333"
                                 elide: Text.ElideRight
-                            }
+                           }
 
                             Text {
                                 Layout.fillWidth: true
@@ -458,6 +461,18 @@ Item {
                                 color: "#666"
                                 elide: Text.ElideRight
                             }
+                        }
+
+                        //添加至喜欢按钮
+                        ToolButton {
+                           id: _loveButton
+                           icon.source: "qrc:/playControl/resources/love.png"
+                           icon.height: 15
+                           icon.width: 15
+                           onClicked: {
+                                let song = BackendManager.getSongById(modelData.id)
+                                BackendManager.setSongFavorite(song)
+                           }
                         }
 
                         //歌曲时间

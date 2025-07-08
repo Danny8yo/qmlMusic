@@ -107,7 +107,7 @@ Item {
                         if (song) {
                             // 将本地音乐列表设置为播放队列
                             let localSongs = [];
-                            for (var i = 0; i < BackendManager.localSongModel.count; ++i) {
+                            for (let i = 0; i < BackendManager.localSongModel.count; ++i) {
                                 localSongs.push(BackendManager.localSongModel.getSong(i));
                             }
                             

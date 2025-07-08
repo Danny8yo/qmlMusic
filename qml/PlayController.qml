@@ -11,6 +11,21 @@ Rectangle {
     height: parent.height/8
     color: "lightgrey"
     // radius: 10
+    property int playControllerWidth: width // 用于外部访问宽度
+    clip: true // 确保内容被正确裁剪
+    z: 1 // 确保 PlayController 在主内容之上
+    
+    // 调试边界 - 可以临时启用来查看组件边界
+    // border.color: "red"
+    // border.width: 2
+
+    // 添加 MouseArea 来捕获所有鼠标事件，防止事件穿透
+    // MouseArea {
+    //     anchors.fill: parent
+    //     acceptedButtons: Qt.AllButtons
+    //     propagateComposedEvents: false // 阻止事件传播到下层
+    //     // 不处理任何事件，只是阻止穿透
+    // }
 
     // 接收来自 main.qml 的 StackView 引用
     // property alias stackView: stackViewDelegate.stackView
@@ -79,9 +94,10 @@ Rectangle {
                 // Layout.fillHeight: true
                 // Layout.fillWidth: true
                 // Layout.alignment: Qt.AlignLeft //左
-                Layout.preferredWidth: parent.width * 0.3
+                Layout.preferredWidth: playControllerWidth / 5
                 Layout.alignment: Qt.AlignLeft
                 spacing: 10
+                // Rectangle { color: "red"; opacity: 0.2; anchors.fill: parent }
 
                 // 圆角图片
                 Item {
@@ -90,7 +106,6 @@ Rectangle {
                     Layout.preferredHeight: 60
                     // radius: 8
                     Layout.alignment: Qt.AlignVCenter
-                    //Rectangle { color: "red"; opacity: 0.2; anchors.fill: parent }
 
                     Image {
                         anchors.fill: parent
@@ -172,14 +187,19 @@ Rectangle {
 
             Item{ // 左部填充（不加的话播放控制按钮不能正确居中）
                 id: _left
-                Layout.fillWidth: true
+                // Rectangle {
+                //     color: "green"
+                //     anchors.fill: parent
+                // }
+                Layout.fillHeight: true
+                Layout.preferredWidth: playControllerWidth / 5
             }
-
 
             //中间的播放控制按钮
             RowLayout {                
                 //()1  anchors.centerIn: parent//将按钮组居中
                 ///Layout.fillWidth: true
+                Layout.preferredWidth: playControllerWidth / 5
                 Layout.alignment: Qt.AlignHCenter  // 使用Layout属性
 
                 spacing: 20 // 设置按钮间固定间距
@@ -188,6 +208,9 @@ Rectangle {
                     id: _previous
                     Layout.preferredWidth: 50
                     Layout.preferredHeight: 50
+                    //靠齐左侧
+                    Layout.alignment: Qt.AlignLeft
+
                     icon.height: 50
                     icon.width: 50
                     icon.source: "qrc:/playControl/resources/previous.png"
@@ -201,6 +224,7 @@ Rectangle {
                     id: _play
                     Layout.preferredWidth: 70
                     Layout.preferredHeight: 70
+                    Layout.alignment: Qt.AlignHCenter // 居中对齐
                     //icon.source: "qrc:/playControl/resources/circlePlay.png"
                     icon.source: BackendManager.playerController.isPlaying ? "qrc:/playControl/resources/circlePause.png" : "qrc:/playControl/resources/circlePlay.png"
                     icon.height: 70
@@ -224,6 +248,7 @@ Rectangle {
                     id: _next
                     Layout.preferredWidth: 50
                     Layout.preferredHeight: 50
+                    Layout.alignment: Qt.AlignRight // 靠齐右侧
                     icon.height: 50
                     icon.width: 50
                     icon.source: "qrc:/playControl/resources/next.png"
@@ -237,14 +262,18 @@ Rectangle {
 
             Item { // 右部填充（不加的话功能按钮不能正确靠右）
                 id: _right
-                Layout.fillWidth: true
-
+                // Rectangle {
+                //     color: "blue"
+                //     anchors.fill: parent
+                // }
+                Layout.fillHeight: true
+                Layout.preferredWidth: playControllerWidth / 5
             }
 
             //右侧功能按钮(播放列表,音量调节,播放模式,歌词显示等)
             RowLayout {
-                spacing: 1
-                Layout.preferredWidth: parent.width * 0.3
+                spacing: 0
+                Layout.preferredWidth: parent.width / 5
                 Layout.alignment: Qt.AlignRight
                 //anchors.right: parent.right
                 //Layout.fillWidth: true
@@ -255,28 +284,19 @@ Rectangle {
                     id: _playMode
                     icon.source: {
                         switch(BackendManager.playerController.playbackMode){
-                        case 0:   return "qrc:/playControl/resources/playlist.png"//BackendManager.playerController.Sequential
-                        case 1:   return "qrc:/playControl/resources/listPlay.png"//BackendManager.playerController.Loop
-                        case 2:   return "qrc:/playControl/resources/randomPlay.png"//BackendManager.playerController.Random
-                        case 3:   return "qrc:/playControl/resources/repeatPlay.png"//BackendManager.playerController.RepeatOne
+                        // case 0:   return "qrc:/playControl/resources/playlist.png"//BackendManager.playerController.Sequential
+                        case 0:   return "qrc:/playControl/resources/listPlay.png"//BackendManager.playerController.Loop
+                        case 1:   return "qrc:/playControl/resources/randomPlay.png"//BackendManager.playerController.Random
+                        case 2:   return "qrc:/playControl/resources/repeatPlay.png"//BackendManager.playerController.RepeatOne
                         }
 
                     }
                         //"qrc:/playControl/resources/listPlay.png"
                     icon.height: 30
                     icon.width: 30
-                    text:{
-                        switch(BackendManager.playerController.playbackMode){
-                        case 0:   return "Seq顺序"//BackendManager.playerController.Sequential
-                        case 1:   return "Loop列表循环"//BackendManager.playerController.Loop
-                        case 2:   return "Random随机"//BackendManager.playerController.Random
-                        case 3:   return "RepeatOne单曲循环"//BackendManager.playerController.RepeatOne
-                        }
-
-                    }
 
                     onClicked: {
-                        let nextMode = (BackendManager.playerController.playbackMode + 1) % 4
+                        let nextMode = (BackendManager.playerController.playbackMode + 1) % 3
                         BackendManager.playerController.playbackMode = nextMode
                         console.log(BackendManager.playerController.playbackMode)
                     }
@@ -306,27 +326,7 @@ Rectangle {
                     }
 
                 }
-
-                ToolButton{
-                    id: _loveButton
-                    icon.source: "qrc:/playControl/resources/love.png"
-                    icon.height: 30
-                    icon.width: 30
-                    onClicked: {
-                        let song = BackendManager.playerController.currentSong
-                        BackendManager.setSongFavorite(song)
-                        // if(!song.isFavorite) {
-                        //     BackendManager.setSongFavorite(song, true)
-                        // } else {
-                        //     BackendManager.setSongFavorite(song, false)
-                        // }
-                        console.log("loveButton clicked",song.coverArtUrl)
-
-
-
-
-                    }
-                }
+                
 
                 ToolButton {
                     //播放列表图标
@@ -352,4 +352,3 @@ Rectangle {
         }
     }
 }
-

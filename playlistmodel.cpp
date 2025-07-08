@@ -112,3 +112,11 @@ void PlaylistModel::clear()
     endResetModel();
     emit countChanged();
 }
+
+void PlaylistModel::updatePlaylistAtIndex(int index)
+{
+    if (index >= 0 && index < m_playlists.size()) {
+        QModelIndex modelIndex = this->index(index);
+        emit dataChanged(modelIndex, modelIndex);
+    }
+}

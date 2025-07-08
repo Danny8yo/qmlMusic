@@ -9,7 +9,7 @@ PlayerController::PlayerController(QObject* parent)
     , m_player(new QMediaPlayer(this))
     , m_audioOutput(new QAudioOutput(this))
     , m_currentIndex(-1)
-    , m_playbackMode(Sequential)
+    , m_playbackMode(Loop)
     , m_currentSong(nullptr)
 {
     m_player->setAudioOutput(m_audioOutput);
@@ -231,8 +231,8 @@ int PlayerController::getNextIndex() const
     if (m_playQueue.isEmpty()) { return -1; }
 
     switch (m_playbackMode) {
-    case Sequential: // 顺序
-        return (m_currentIndex + 1 < m_playQueue.size()) ? m_currentIndex + 1 : -1;
+    // case Sequential: // 顺序
+    //     return (m_currentIndex + 1 < m_playQueue.size()) ? m_currentIndex + 1 : -1;
 
     case Loop: // 循环
         return (m_currentIndex + 1) % m_playQueue.size();
@@ -259,8 +259,8 @@ int PlayerController::getPreviousIndex() const
     if (m_playQueue.isEmpty()) { return -1; }
 
     switch (m_playbackMode) {
-    case Sequential:
-        return (m_currentIndex > 0) ? m_currentIndex - 1 : -1;
+    // case Sequential:
+    //     return (m_currentIndex > 0) ? m_currentIndex - 1 : -1;
 
     case Loop:
         return (m_currentIndex > 0) ? m_currentIndex - 1 : m_playQueue.size() - 1;

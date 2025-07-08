@@ -24,7 +24,7 @@ class PlayerController : public QObject
 public:
     enum PlaybackMode
     {
-        Sequential, // 顺序播放（列表播放完后不继续播放）
+        // Sequential, // 顺序播放（列表播放完后不继续播放）
         Loop,       // 循环播放（列表播放完后从头开始播放）
         Random,     // 随机播放
         RepeatOne   // 单曲循环
