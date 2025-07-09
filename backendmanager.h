@@ -80,6 +80,7 @@ public:
 
     // 设置歌曲喜欢状态
     Q_INVOKABLE void setSongFavorite(Song *song);
+    Q_INVOKABLE bool isSongFavorite(Song *song);
 
     // 更新视图
     Q_INVOKABLE void loadSongLibrary();
@@ -101,6 +102,8 @@ signals:
     void scanFinished();
     // 实例化各板块如音乐扫描器、playerController和各种数据模型后发出信号
     void initialized();
+    // 歌曲喜欢状态变化信号
+    void songFavoriteChanged(Song *song, bool isFavorite);
 
 private slots:
     // foundSongs是musicScanner扫描目录后添加的歌曲

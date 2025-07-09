@@ -186,7 +186,13 @@ Rectangle {
                 delegate: Rectangle {
                     width: _favoriteSongList.width
                     height: 60
-                    color: index === _favoriteSongList.currentIndex ? "white" : "#95cac5"
+                    color: index === _favoriteSongList.currentIndex ? "white" : 
+                           (_hoverHandler.hovered ? "#a0d0d0" : "#95cac5")
+
+                    // 鼠标悬停处理
+                    HoverHandler {
+                        id: _hoverHandler
+                    }
 
                     RowLayout {
                         anchors.fill: parent
@@ -247,6 +253,41 @@ Rectangle {
                             text: model.formattedDuration /*|| "00:00"*/
                             font.pixelSize: 14
                             color: "#666"
+                        }
+
+                        // 取消收藏按钮
+                        Rectangle {
+                            id: _cancelFavoriteButton
+                            width: 30
+                            height: 30
+                            color: _cancelHoverHandler.hovered ? "#ffebee" : "transparent"
+                            radius: 15
+                            
+                            // 悬停处理
+                            HoverHandler {
+                                id: _cancelHoverHandler
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "✕"
+                                font.pixelSize: 20
+                                color: _cancelHoverHandler.hovered ? "#d32f2f" : "#e91e63"
+                            }
+                            
+                            // 点击处理
+                            TapHandler {
+                                acceptedButtons: Qt.LeftButton
+                                onTapped: {
+                                    if (model) {
+                                        let song = BackendManager.getSongById(model.id)
+                                        if (song) {
+                                            console.log("从喜欢中移除:", model.title)
+                                            BackendManager.setSongFavorite(song) // 切换状态（从喜欢变为不喜欢）
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -328,6 +369,15 @@ Rectangle {
         // 这里应该从后端获取实际的收藏数量
         //let favoritelist = BackendManager.favoriteModel.getAllSongs()
         updateFavoriteCount(BackendManager.favoriteModel.count)
+    }
+    
+    // 监听喜欢状态变化，更新收藏数量
+    Connections {
+        target: BackendManager
+        function onSongFavoriteChanged(song, isFavorite) {
+            console.log("喜欢状态变化:", song.title, isFavorite)
+            updateFavoriteCount(BackendManager.favoriteModel.count)
+        }
     }
     // 监听模型变化
     // Connections {

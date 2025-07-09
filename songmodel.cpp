@@ -102,6 +102,16 @@ void SongModel::removeSong(int index)
     emit countChanged();
 }
 
+void SongModel::removeSong(Song *song)
+{
+    if (!song) return;
+    
+    int index = m_songs.indexOf(song);
+    if (index >= 0) {
+        removeSong(index);
+    }
+}
+
 Song *SongModel::getSong(int index) const
 {
     if (index >= 0 && index < m_songs.size()) { return m_songs[index]; }

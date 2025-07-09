@@ -38,6 +38,7 @@ public:
     Q_INVOKABLE void loadSongs(const QList<Song *> &songs);
     Q_INVOKABLE void addSong(Song *song);
     Q_INVOKABLE void removeSong(int index);
+    Q_INVOKABLE void removeSong(Song *song);
     Q_INVOKABLE Song *getSong(int index) const;
     Q_INVOKABLE QList<Song *> getAllSongs() const; // 获取自身所有歌曲
     Q_INVOKABLE void clear();
@@ -55,6 +56,4 @@ private:
     QList<Song *> m_allSongs; // 用于筛选功能
 
     void refreshModel(); // 刷新模型数据
-
-signals:
 };

@@ -10,7 +10,6 @@ Item {
     id:_playlist
     anchors.fill: parent
     visible: true
-
     
     // 播放列表属性
     property int playlistId: -1
@@ -73,31 +72,6 @@ Item {
         spacing: 0
         anchors.fill: parent
 
-        // 顶头退出按钮
-        Rectangle{
-            id:_headerBar
-            Layout.fillWidth: true
-            Layout.preferredHeight: 30
-            color: "#e0e0e0"
-            Button {
-                text: "<"
-                background: Rectangle {
-                    color: parent.hovered ? "#d2d2d2" : "transparent"
-                    radius: 4
-                }
-                
-                contentItem: Text {
-                    text: parent.text
-                    color: "#333"
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-                
-                TapHandler {
-                    onTapped: _playlist.backRequested()
-                }
-            }
-        }
         //上方的矩形
         Rectangle{
             id:_top
@@ -227,35 +201,6 @@ Item {
                                    }
                                }
                            }
-
-                           // 收藏歌单按钮
-                        //    Button{
-                        //        id:_like
-                        //        Layout.alignment: Qt.AlignLeft
-                        //        Layout.preferredWidth: 35
-                        //        text:"♥"
-
-                        //        background: Rectangle {
-                        //            color: parent.hovered ? "#d2d2d2" : "white"
-                        //            border.color: "#ddd"
-                        //            radius: 20
-                        //        }
-
-                        //        contentItem: Text {
-                        //            text: parent.text
-                        //            color: "#666"
-                        //            font.pixelSize: 14
-                        //            horizontalAlignment: Text.AlignHCenter
-                        //            verticalAlignment: Text.AlignVCenter
-                        //        }
-
-                        //        TapHandler {
-                        //            onTapped: {
-                        //                console.log("收藏播放列表")
-                        //                // TODO: 实现收藏功能
-                        //            }
-                        //        }
-                        //    }
 
                            Button{ //点击后进入添加歌曲进播放列表的界面，能添加的歌曲由数据库提供
                                id:_more
@@ -463,27 +408,42 @@ Item {
                             }
                         }
 
-                        //添加至喜欢按钮
-                        ToolButton {
-                           id: _loveButton
-                           icon.source: "qrc:/playControl/resources/love.png"
-                           icon.height: 15
-                           icon.width: 15
-                           onClicked: {
-                                let song = BackendManager.getSongById(modelData.id)
-                                BackendManager.setSongFavorite(song)
-                           }
-                        }
-
                         //歌曲时间
                         Text {
                             text: modelData.durationString /*|| "00:00"*/
-                            // text: {
-                                   // console.log("!!!!!!!!!!song.durationString():",modelData.durationString)
-                            // }
-
                             font.pixelSize: 14
                             color: "#666"
+                        }
+
+                        //添加至喜欢按钮
+                        ToolButton {
+                           id: _loveButton
+                           property bool isLoved: {
+                               let song = BackendManager.getSongById(modelData.id);
+                               return BackendManager.isSongFavorite(song);
+                           }
+
+                           icon.source: isLoved ? "qrc:/playControl/resources/redLoved.png" : "qrc:/playControl/resources/love.png"
+                           icon.height: 15
+                           icon.width: 15
+                           
+                           onClicked: {
+                               let song = BackendManager.getSongById(modelData.id)
+                               if (song) {
+                                   BackendManager.setSongFavorite(song)
+                                   console.log(isLoved ? "取消喜欢:" : "添加到喜欢:", modelData.title)
+                               }
+                           }
+                           
+                           // 监听喜欢状态变化信号
+                           Connections {
+                               target: BackendManager
+                               function onSongFavoriteChanged(song, isFavorite) {
+                                   if (song && modelData && song.id === modelData.id) {
+                                       _loveButton.isLoved = isFavorite
+                                   }
+                               }
+                           }
                         }
                     }
 

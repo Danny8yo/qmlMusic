@@ -272,35 +272,25 @@ void BackendManager::setSongFavorite(Song *song)
     if (!song->isFavorite())
     {
         song->setIsFavorite(true);
-        qDebug() << "设置喜欢歌曲" << song->coverArtUrl();
+        qDebug() << "设置喜欢歌曲" << song->title();
         m_favoriteModel->addSong(song);
     }
     else
     {
         song->setIsFavorite(false);
-
-        if (!m_favoriteModel || !m_dbManager) {
-            qDebug() << "模型或数据库管理器未初始化";
-            return;
-        }
-
-        // 从模型中找到并删除
-        // QList<Song *> songs = m_favoriteModel->getAllSongs();
-        // for(auto &song1 : songs) {
-
-        // }
-        for (int i = 0; i < m_favoriteModel->rowCount(); ++i) {
-            Song *song1 = m_favoriteModel->getSong(i);
-            if (song1 && song1->id() == song->id()) {
-                m_favoriteModel->removeSong(i);
-                qDebug() << "成功取消喜欢，ID:" << song->id();
-                break;
-            }
-        }
+        m_favoriteModel->removeSong(song);
+        qDebug() << "取消喜欢歌曲" << song->title();
     }
-    // song->setIsFavorite(favorite); // 设置歌曲喜欢状态
 
     m_dbManager->updateSong(song); // 更新数据库信息
+    
+    // 发送信号通知所有视图更新
+    emit songFavoriteChanged(song, song->isFavorite());
+}
+
+bool BackendManager::isSongFavorite(Song *song)
+{
+    return song ? song->isFavorite() : false;
 }
 
 // Playlist *BackendManager::createPlaylist(const QString &name, const QString &description) {}
@@ -402,7 +392,6 @@ void BackendManager::deleteLocalPlaylist(int playlistId)
     if (m_dbManager->deletePlaylist(playlistId))
     {
         // 从模型中找到并删除
-        //for(auto &plalist : m_locallistModel)
         for (int i = 0; i < m_locallistModel->rowCount(); ++i)
         {
             Playlist *playlist = m_locallistModel->getPlaylist(i);
