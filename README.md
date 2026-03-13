@@ -23,3 +23,9 @@
 请通过以下命令安装  
 **manjaro:** pacman -S taglib 
 然后通过cmake编译
+
+## 成果展示
+![img](./展示.jpg)
+![](./展示2.jpg)
+![](./展示3.png)
+![](./展示4.png)
